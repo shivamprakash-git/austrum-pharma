@@ -295,25 +295,33 @@ contactForm.addEventListener('submit', async (e) => {
     }
 });
 
-// Show notification
+// Show enhanced notification with tick icon
 function showNotification(message) {
     const notification = document.createElement('div');
     notification.className = 'notification';
-    notification.textContent = message;
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: var(--success);
-        color: white;
-        padding: 15px 20px;
-        border-radius: 5px;
-        z-index: 1000;
-    `;
+    
+    // Create tick icon
+    const icon = document.createElement('div');
+    icon.className = 'notification-icon';
+    icon.innerHTML = '✓';
+    
+    // Create message container
+    const messageContainer = document.createElement('div');
+    messageContainer.className = 'notification-message';
+    messageContainer.textContent = message;
+    
+    // Assemble notification
+    notification.appendChild(icon);
+    notification.appendChild(messageContainer);
+    
     document.body.appendChild(notification);
+    
+    // Remove notification after animation completes (4s total: 3.5s display + 0.4s fade out)
     setTimeout(() => {
-        document.body.removeChild(notification);
-    }, 3000);
+        if (notification.parentNode) {
+            document.body.removeChild(notification);
+        }
+    }, 3900);
 }
 
 // Product Modal Functionality
