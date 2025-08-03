@@ -7,8 +7,16 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/enhanced-animations.css">
 </head>
 <body>
+    <!-- Top Moving Banner -->
+    <div class="moving-banner top-banner">
+        <div class="banner-content">
+            <span>🏥 Quality Healthcare Solutions • 💊 Trusted Pharmaceutical Excellence • 🌟 Your Health Our Priority • 🔬 Innovation in Medicine • 💚 Committed to Wellness • 🏥 Quality Healthcare Solutions • 💊 Trusted Pharmaceutical Excellence • 🌟 Your Health Our Priority • 🔬 Innovation in Medicine • 💚 Committed to Wellness</span>
+        </div>
+    </div>
+
     <!-- Header -->
     <header>
         <div class="container header-container">
@@ -125,7 +133,7 @@
                 <p>Quality pharmaceutical solutions across therapeutic categories</p>
             </div>
             <div class="products-grid">
-                <div class="product-card">
+                <div class="product-card" data-product="cardiology">
                     <div class="product-image">
                         <img src="https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Cardiology Products">
                     </div>
@@ -133,10 +141,14 @@
                         <span class="product-category">Cardiology</span>
                         <h3>CardioCare Range</h3>
                         <p>Advanced solutions for hypertension, heart failure, and arrhythmia management.</p>
+                        <div class="product-overlay">
+                            <i class="fas fa-plus"></i>
+                            <span>View Details</span>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="product-card">
+                <div class="product-card" data-product="diabetology">
                     <div class="product-image">
                         <img src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Diabetology Products">
                     </div>
@@ -144,10 +156,14 @@
                         <span class="product-category">Diabetology</span>
                         <h3>DiaBalance Range</h3>
                         <p>Innovative formulations for diabetes management and related complications.</p>
+                        <div class="product-overlay">
+                            <i class="fas fa-plus"></i>
+                            <span>View Details</span>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="product-card">
+                <div class="product-card" data-product="neurology">
                     <div class="product-image">
                         <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Neurology Products">
                     </div>
@@ -155,10 +171,14 @@
                         <span class="product-category">Neurology</span>
                         <h3>NeuroSafe Range</h3>
                         <p>Effective treatments for neurological disorders and pain management.</p>
+                        <div class="product-overlay">
+                            <i class="fas fa-plus"></i>
+                            <span>View Details</span>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="product-card">
+                <div class="product-card" data-product="antibiotics">
                     <div class="product-image">
                         <img src="https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Antibiotics">
                     </div>
@@ -166,6 +186,40 @@
                         <span class="product-category">Antibiotics</span>
                         <h3>AntiBac Range</h3>
                         <p>Broad-spectrum antibiotics for effective infection management.</p>
+                        <div class="product-overlay">
+                            <i class="fas fa-plus"></i>
+                            <span>View Details</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="product-card" data-product="gastroenterology">
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Gastroenterology Products">
+                    </div>
+                    <div class="product-content">
+                        <span class="product-category">Gastroenterology</span>
+                        <h3>GastroHeal Range</h3>
+                        <p>Comprehensive solutions for digestive health and gastrointestinal disorders.</p>
+                        <div class="product-overlay">
+                            <i class="fas fa-plus"></i>
+                            <span>View Details</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="product-card" data-product="respiratory">
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1631815589968-fdb09a223b1e?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Respiratory Products">
+                    </div>
+                    <div class="product-content">
+                        <span class="product-category">Respiratory</span>
+                        <h3>RespiroCare Range</h3>
+                        <p>Advanced treatments for asthma, COPD, and respiratory infections.</p>
+                        <div class="product-overlay">
+                            <i class="fas fa-plus"></i>
+                            <span>View Details</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -256,6 +310,13 @@
         </div>
     </section>
 
+    <!-- Bottom Moving Banner -->
+    <div class="moving-banner bottom-banner">
+        <div class="banner-content">
+            <span>🌍 Serving Healthcare Globally • 🏆 ISO Certified Quality • 📞 24/7 Customer Support • 🚚 Fast & Reliable Delivery • 💼 B2B Partnership Available • 🔒 Secure & Confidential • 🌍 Serving Healthcare Globally • 🏆 ISO Certified Quality • 📞 24/7 Customer Support • 🚚 Fast & Reliable Delivery • 💼 B2B Partnership Available • 🔒 Secure & Confidential</span>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer>
         <div class="container footer-content">
@@ -312,6 +373,48 @@
     <!-- Back to Top Button -->
     <div class="back-to-top">
         <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- Product Modal -->
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close">&times;</span>
+                <h2 id="modalTitle">Product Details</h2>
+            </div>
+            <div class="modal-body">
+                <div class="modal-product-info">
+                    <div class="modal-image">
+                        <img id="modalImage" src="" alt="Product Image">
+                    </div>
+                    <div class="modal-details">
+                        <span id="modalCategory" class="modal-category"></span>
+                        <h3 id="modalProductName"></h3>
+                        <p id="modalDescription"></p>
+                        
+                        <div class="product-specifications">
+                            <h4>Key Features</h4>
+                            <ul id="modalFeatures"></ul>
+                        </div>
+                        
+                        <div class="product-indications">
+                            <h4>Indications</h4>
+                            <ul id="modalIndications"></ul>
+                        </div>
+                        
+                        <div class="product-dosage">
+                            <h4>Available Forms</h4>
+                            <div id="modalDosage" class="dosage-info"></div>
+                        </div>
+                        
+                        <div class="contact-cta">
+                            <p>For detailed product information and availability:</p>
+                            <a href="#contact" class="cta-button modal-contact-btn">Contact Us</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="js/script.js"></script>
