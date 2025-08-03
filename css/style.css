@@ -278,8 +278,8 @@ header {
 
 @media (max-width: 768px) {
     .logo-image {
-        height: 50px;
-        width: 50px;
+        height: 70px;
+        width: 70px;
         border-radius: 50%;
         object-fit: cover;
     }
@@ -1977,6 +1977,56 @@ footer::before {
     footer {
         margin-top: 40px;
         padding: 40px 0;
+    }
+}
+
+/* Fix for desktop view on mobile portrait mode - text overlapping with icons */
+@media screen and (max-width: 1024px) and (orientation: portrait) {
+    .contact-item {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 20px 15px;
+        margin-bottom: 25px;
+    }
+    
+    .contact-icon {
+        margin-right: 0;
+        margin-bottom: 15px;
+        align-self: center;
+    }
+    
+    .contact-text {
+        text-align: center;
+        width: 100%;
+    }
+    
+    .contact-text h4 {
+        font-size: 1.1rem;
+        margin-bottom: 8px;
+    }
+    
+    .contact-text p {
+        font-size: 0.95rem;
+        line-height: 1.5;
+        word-wrap: break-word;
+    }
+}
+
+/* Additional fix for very narrow portrait screens */
+@media screen and (max-width: 768px) and (orientation: portrait) {
+    .contact-container {
+        gap: 20px;
+    }
+    
+    .contact-item {
+        padding: 15px 10px;
+        margin-bottom: 20px;
+    }
+    
+    .contact-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 1.1rem;
     }
 }
 
