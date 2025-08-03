@@ -56,27 +56,37 @@ document.addEventListener('DOMContentLoaded', function() {
                 animation: logoGlow 3s ease-in-out infinite alternate;
             `;
             
-            // Create company name text
+            // Create company name text with responsive design
             const companyText = document.createElement('div');
+            
+            // Check if mobile device
+            const isMobile = window.innerWidth <= 768;
+            const isSmallMobile = window.innerWidth <= 480;
+            
             companyText.innerHTML = `
                 <h2 style="
                     color: white;
                     font-family: 'Montserrat', sans-serif;
-                    font-size: 2.5rem;
+                    font-size: ${isSmallMobile ? '1.8rem' : isMobile ? '2.1rem' : '2.5rem'};
                     font-weight: 700;
                     text-align: center;
                     margin: 30px 0 10px 0;
+                    padding: 0 ${isSmallMobile ? '20px' : isMobile ? '15px' : '10px'};
                     text-shadow: 0 0 20px rgba(82, 183, 136, 0.8);
-                    letter-spacing: 3px;
+                    letter-spacing: ${isSmallMobile ? '1px' : isMobile ? '2px' : '3px'};
                     animation: textGlow 2s ease-in-out infinite alternate;
+                    word-wrap: break-word;
+                    hyphens: auto;
+                    line-height: 1.2;
                 ">AUSTRUM PHARMACEUTICALS</h2>
                 <p style="
                     color: rgba(255, 255, 255, 0.9);
                     font-family: 'Open Sans', sans-serif;
-                    font-size: 1.2rem;
+                    font-size: ${isSmallMobile ? '1rem' : isMobile ? '1.1rem' : '1.2rem'};
                     text-align: center;
                     margin: 0;
-                    letter-spacing: 2px;
+                    padding: 0 ${isSmallMobile ? '20px' : isMobile ? '15px' : '10px'};
+                    letter-spacing: ${isSmallMobile ? '1px' : '2px'};
                     text-transform: uppercase;
                     animation: fadeInUp 1s ease-out 0.5s both;
                 ">Your Health Our Priority</p>
@@ -477,56 +487,77 @@ document.addEventListener('DOMContentLoaded', function() {
     const modalDosage = document.getElementById('modalDosage');
     const closeBtn = document.querySelector('.close');
 
+    // Function to open product modal
+    function openProductModal(productType) {
+        const product = productData[productType];
+        
+        if (product) {
+            // Populate modal with product data
+            modalTitle.textContent = product.name + ' - Details';
+            modalImage.src = product.image;
+            modalImage.alt = product.name;
+            modalCategory.textContent = product.category;
+            modalProductName.textContent = product.name;
+            modalDescription.textContent = product.description;
+            
+            // Populate features
+            modalFeatures.innerHTML = '';
+            product.features.forEach(feature => {
+                const li = document.createElement('li');
+                li.textContent = feature;
+                modalFeatures.appendChild(li);
+            });
+            
+            // Populate indications
+            modalIndications.innerHTML = '';
+            product.indications.forEach(indication => {
+                const li = document.createElement('li');
+                li.textContent = indication;
+                modalIndications.appendChild(li);
+            });
+            
+            // Populate dosage forms
+            modalDosage.innerHTML = '';
+            product.dosageForms.forEach(form => {
+                const span = document.createElement('span');
+                span.className = 'dosage-item';
+                span.textContent = form;
+                modalDosage.appendChild(span);
+            });
+            
+            // Show modal with animation
+            modal.classList.add('show');
+            setTimeout(() => {
+                modal.style.opacity = '1';
+            }, 10);
+            
+            // Prevent body scroll
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
     // Add click event listeners to product cards
     const productCards = document.querySelectorAll('.product-card');
     productCards.forEach(card => {
         card.addEventListener('click', function() {
             const productType = this.getAttribute('data-product');
-            const product = productData[productType];
+            openProductModal(productType);
+        });
+    });
+    
+    // Add click event listeners to therapeutic area links in footer
+    const therapeuticLinks = document.querySelectorAll('.therapeutic-link');
+    therapeuticLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault(); // Prevent default link behavior
+            const productType = this.getAttribute('data-product');
+            openProductModal(productType);
             
-            if (product) {
-                // Populate modal with product data
-                modalTitle.textContent = product.name + ' - Details';
-                modalImage.src = product.image;
-                modalImage.alt = product.name;
-                modalCategory.textContent = product.category;
-                modalProductName.textContent = product.name;
-                modalDescription.textContent = product.description;
-                
-                // Populate features
-                modalFeatures.innerHTML = '';
-                product.features.forEach(feature => {
-                    const li = document.createElement('li');
-                    li.textContent = feature;
-                    modalFeatures.appendChild(li);
-                });
-                
-                // Populate indications
-                modalIndications.innerHTML = '';
-                product.indications.forEach(indication => {
-                    const li = document.createElement('li');
-                    li.textContent = indication;
-                    modalIndications.appendChild(li);
-                });
-                
-                // Populate dosage forms
-                modalDosage.innerHTML = '';
-                product.dosageForms.forEach(form => {
-                    const span = document.createElement('span');
-                    span.className = 'dosage-item';
-                    span.textContent = form;
-                    modalDosage.appendChild(span);
-                });
-                
-                // Show modal with animation
-                modal.classList.add('show');
-                setTimeout(() => {
-                    modal.style.opacity = '1';
-                }, 10);
-                
-                // Prevent body scroll
-                document.body.style.overflow = 'hidden';
-            }
+            // Smooth scroll to top to show the modal properly
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
         });
     });
 
