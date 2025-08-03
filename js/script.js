@@ -59,58 +59,74 @@ document.addEventListener('DOMContentLoaded', function() {
             // Create company name text with responsive design
             const companyText = document.createElement('div');
             
-            // Check if mobile device
+            // Check device size with more precise breakpoints
             const isMobile = window.innerWidth <= 768;
             const isSmallMobile = window.innerWidth <= 480;
+            const isTinyMobile = window.innerWidth <= 360;
+            
+            // Calculate responsive sizes to prevent overlap
+            const logoSize = isSmallMobile ? '250px' : isMobile ? '300px' : '400px';
+            const titleFontSize = isTinyMobile ? '1.4rem' : isSmallMobile ? '1.6rem' : isMobile ? '1.9rem' : '2.5rem';
+            const subtitleFontSize = isTinyMobile ? '0.8rem' : isSmallMobile ? '0.9rem' : isMobile ? '1rem' : '1.2rem';
+            const horizontalPadding = isTinyMobile ? '15px' : isSmallMobile ? '20px' : isMobile ? '25px' : '30px';
+            const letterSpacing = isTinyMobile ? '0.5px' : isSmallMobile ? '1px' : isMobile ? '1.5px' : '3px';
+            
+            // Adjust logo container max size
+            enlargedImage.style.cssText = `
+                max-width: ${logoSize};
+                max-height: ${logoSize};
+                width: auto;
+                height: auto;
+                object-fit: contain;
+                border-radius: 20px;
+                box-shadow: 
+                    0 0 50px rgba(82, 183, 136, 0.6),
+                    0 0 100px rgba(82, 183, 136, 0.4),
+                    0 0 150px rgba(82, 183, 136, 0.2),
+                    0 20px 40px rgba(0, 0, 0, 0.3);
+                border: 3px solid rgba(255, 255, 255, 0.2);
+                animation: logoGlow 3s ease-in-out infinite alternate;
+                margin-bottom: ${isMobile ? '20px' : '30px'};
+            `;
             
             companyText.innerHTML = `
                 <h2 style="
                     color: white;
                     font-family: 'Montserrat', sans-serif;
-                    font-size: ${isSmallMobile ? '1.8rem' : isMobile ? '2.1rem' : '2.5rem'};
+                    font-size: ${titleFontSize};
                     font-weight: 700;
                     text-align: center;
-                    margin: 30px 0 10px 0;
-                    padding: 0 ${isSmallMobile ? '20px' : isMobile ? '15px' : '10px'};
+                    margin: ${isMobile ? '15px 0 8px 0' : '20px 0 10px 0'};
+                    padding: 0 ${horizontalPadding};
                     text-shadow: 0 0 20px rgba(82, 183, 136, 0.8);
-                    letter-spacing: ${isSmallMobile ? '1px' : isMobile ? '2px' : '3px'};
+                    letter-spacing: ${letterSpacing};
                     animation: textGlow 2s ease-in-out infinite alternate;
                     word-wrap: break-word;
                     hyphens: auto;
-                    line-height: 1.2;
+                    line-height: ${isMobile ? '1.1' : '1.2'};
+                    max-width: 100%;
+                    overflow-wrap: break-word;
                 ">AUSTRUM PHARMACEUTICALS</h2>
                 <p style="
                     color: rgba(255, 255, 255, 0.9);
                     font-family: 'Open Sans', sans-serif;
-                    font-size: ${isSmallMobile ? '1rem' : isMobile ? '1.1rem' : '1.2rem'};
+                    font-size: ${subtitleFontSize};
                     text-align: center;
                     margin: 0;
-                    padding: 0 ${isSmallMobile ? '20px' : isMobile ? '15px' : '10px'};
-                    letter-spacing: ${isSmallMobile ? '1px' : '2px'};
+                    padding: 0 ${horizontalPadding};
+                    letter-spacing: ${isTinyMobile ? '0.5px' : isSmallMobile ? '1px' : '2px'};
                     text-transform: uppercase;
                     animation: fadeInUp 1s ease-out 0.5s both;
+                    line-height: 1.3;
+                    max-width: 100%;
+                    overflow-wrap: break-word;
                 ">Your Health Our Priority</p>
             `;
-            
-            // Create close instruction
-            const closeInstruction = document.createElement('div');
-            closeInstruction.style.cssText = `
-                position: absolute;
-                bottom: 50px;
-                left: 50%;
-                transform: translateX(-50%);
-                color: rgba(255, 255, 255, 0.7);
-                font-size: 1rem;
-                text-align: center;
-                animation: pulse 2s ease-in-out infinite;
-            `;
-            closeInstruction.textContent = 'Click anywhere to close';
             
             // Assemble the lightbox
             logoContainer.appendChild(enlargedImage);
             logoContainer.appendChild(companyText);
             lightbox.appendChild(logoContainer);
-            lightbox.appendChild(closeInstruction);
             document.body.appendChild(lightbox);
             
             // Animate entrance
