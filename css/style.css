@@ -1352,6 +1352,18 @@ footer::before {
 }
 
 @media (max-width: 991px) {
+    /* Products section adjustments for mobile */
+    .products {
+        padding: 40px 0;
+        overflow: hidden;
+    }
+    
+    .products-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 0 15px;
+    }
+    
     .mobile-toggle {
         display: flex !important;
         position: absolute;
@@ -1424,6 +1436,45 @@ footer::before {
         text-align: left;
         display: inline-block;
         width: 100%;
+    }
+    
+    /* Center footer content and make green line symmetrical */
+    .footer-container {
+        justify-items: center;
+        text-align: center;
+    }
+    
+    .footer-col {
+        width: 100%;
+        max-width: 300px;
+        text-align: center;
+        margin: 0 auto 30px;
+    }
+    
+    .footer-col h4::after {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    
+    .footer-links {
+        padding: 0;
+        display: inline-block;
+        text-align: center;
+    }
+    
+    .footer-links li {
+        text-align: center;
+    }
+    
+    /* Center social media icons in footer */
+    .social-links {
+        justify-content: center;
+        margin: 25px auto 0;
+        width: 100%;
+    }
+    
+    .social-links a {
+        margin: 0 5px;
     }
     
     .header-container {
@@ -2120,37 +2171,106 @@ footer::before {
 }
 
 @media (max-width: 480px) {
+    .modal {
+        padding: 5px;
+        align-items: flex-start;
+        padding-top: 20px;
+    }
+    
     .modal-content {
-        width: 98%;
-        margin: 5px;
-        max-height: 95vh;
+        width: 100%;
+        margin: 0;
+        max-height: 70vh;
+        border-radius: 10px;
     }
     
     .modal-header {
-        padding: 12px 15px;
+        padding: 8px 12px;
+        position: sticky;
+        top: 0;
+        z-index: 10;
     }
     
     .modal-header h2 {
-        font-size: 1.2rem;
+        font-size: 1rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 80%;
     }
     
     .modal-body {
-        padding: 15px;
+        padding: 8px 10px;
+        overflow-y: auto;
     }
     
     .modal-details {
-        gap: 15px;
+        gap: 8px;
+    }
+    
+    .modal-product-info {
+        gap: 10px;
     }
     
     .modal-image img {
-        height: 180px;
+        height: 120px;
+        object-fit: contain;
     }
     
     .close {
-        right: 15px;
-        font-size: 1.5rem;
-        width: 35px;
-        height: 35px;
+        right: 8px;
+        top: 8px;
+        transform: none;
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+        width: 26px;
+        height: 26px;
+        font-size: 1.1rem;
+    }
+    
+    .modal-details h3 {
+        font-size: 1.1rem;
+        margin-bottom: 3px;
+    }
+    
+    .modal-details > p {
+        font-size: 0.85rem;
+        line-height: 1.4;
+    }
+    
+    .product-specifications,
+    .product-indications,
+    .product-dosage {
+        padding: 8px 10px;
+        margin: 8px 0;
+    }
+    
+    .product-specifications h4,
+    .product-indications h4,
+    .product-dosage h4 {
+        font-size: 1rem;
+        margin-bottom: 6px;
+    }
+    
+    .product-specifications li,
+    .product-indications li {
+        padding: 6px 0 6px 20px;
+        font-size: 0.9rem;
+    }
+    
+    .contact-cta {
+        padding: 15px;
+        margin-top: 15px;
+    }
+    
+    .contact-cta p {
+        font-size: 1rem;
+        margin-bottom: 10px;
+    }
+    
+    .modal-contact-btn {
+        padding: 10px 20px;
+        font-size: 0.9rem;
     }
     
     /* Fix product grid overlap in mobile desktop mode */
