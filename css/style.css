@@ -52,7 +52,13 @@ body {
     position: fixed;
     top: 0;
     left: 0;
+    width: 100%;
     z-index: 1000;
+    /* Performance optimizations for mobile scrolling */
+    will-change: transform;
+    transform: translateZ(0); /* Force hardware acceleration */
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
 }
 
 /* Make bottom banner identical to top banner */
@@ -2038,20 +2044,24 @@ footer::before {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px;
+    padding: 0;
+    margin: 0;
     box-sizing: border-box;
+    width: 100%;
+    height: 100%;
 }
 
 .modal-content {
     background: var(--white);
-    border-radius: 15px;
-    width: 90%;
+    width: 100%;
     max-width: 900px;
     max-height: 90vh;
     overflow-y: auto;
     position: relative;
     animation: slideInUp 0.4s ease-out;
     box-shadow: var(--shadow-heavy);
+    margin: 0;
+    padding: 0;
 }
 
 @keyframes fadeIn {
@@ -2078,8 +2088,11 @@ footer::before {
     background: var(--gradient-primary);
     color: var(--white);
     padding: 20px 30px;
-    border-radius: 15px 15px 0 0;
+    border-radius: 0;
     position: relative;
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* Mobile specific - make header completely square */
@@ -2569,8 +2582,11 @@ footer::before {
     background: var(--gradient-primary);
     margin-bottom: 0 !important;
     border-bottom: none !important;
-    box-shadow: 0 2px 10px rgba(27, 67, 50, 0.2);
+    /* Remove box-shadow to prevent mobile scroll flickering */
+    box-shadow: none;
     z-index: 1000;
+    /* Add subtle border instead of shadow for better performance */
+    border-bottom: 1px solid rgba(27, 67, 50, 0.3);
 }
 @media (max-width: 480px) {
     .top-banner {
@@ -2579,6 +2595,13 @@ footer::before {
         max-height: 32px !important;
         box-shadow: none !important;
         background: var(--gradient-primary) !important;
+        /* Additional mobile optimizations */
+        -webkit-transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0);
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
     }
     body {
         padding-top: 32px !important;
@@ -2591,6 +2614,13 @@ footer::before {
         max-height: 35px !important;
         box-shadow: none !important;
         background: var(--gradient-primary) !important;
+        /* Additional tablet optimizations */
+        -webkit-transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0);
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
     }
     body {
         padding-top: 35px !important;
