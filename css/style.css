@@ -2327,16 +2327,18 @@ footer::before {
 
 @media (max-width: 480px) {
     .modal {
-        padding: 5px;
+        padding: 0 10px;
         align-items: flex-start;
         padding-top: 20px;
+        box-sizing: border-box;
     }
     
     .modal-content {
-        width: 100%;
-        margin: 0;
-        max-height: 70vh;
+        width: calc(100% - 20px);
+        margin: 0 10px;
+        max-height: 80vh;
         border-radius: 0;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     }
     
     .modal-header {
