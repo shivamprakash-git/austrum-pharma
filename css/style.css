@@ -45,6 +45,7 @@ body {
     font-weight: 500;
     font-size: 14px;
     box-shadow: 0 2px 10px rgba(27, 67, 50, 0.2);
+    margin: 0;
 }
 
 .top-banner {
@@ -54,8 +55,39 @@ body {
     z-index: 1000;
 }
 
+/* Make bottom banner identical to top banner */
 .bottom-banner {
-    background: var(--gradient-secondary);
+    background: var(--gradient-primary) !important;
+    height: 35px;
+    min-height: 35px;
+    max-height: 35px;
+    color: var(--white);
+    padding: 8px 0;
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+    z-index: 100;
+    font-weight: 500;
+    font-size: 14px;
+    margin: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+@media (max-width: 768px) {
+    .bottom-banner {
+        padding: 6px 0 !important;
+        height: 35px !important;
+        min-height: 35px !important;
+        max-height: 35px !important;
+    }
+}
+@media (max-width: 480px) {
+    .bottom-banner {
+        padding: 4px 0 !important;
+        height: 32px !important;
+        min-height: 32px !important;
+        max-height: 32px !important;
+    }
 }
 
 .banner-content {
@@ -81,6 +113,38 @@ body {
 /* Adjust body padding for top banner */
 body {
     padding-top: 35px;
+}
+
+/* Ensure no spacing between bottom banner and footer */
+.bottom-banner {
+    margin-bottom: 0 !important;
+    padding-bottom: 8px !important;
+}
+
+footer {
+    margin-top: 0 !important;
+    padding-top: 60px !important;
+}
+
+/* Mobile specific fixes */
+@media (max-width: 768px) {
+    .bottom-banner {
+        padding-bottom: 6px !important;
+    }
+    
+    footer {
+        padding-top: 40px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .bottom-banner {
+        padding-bottom: 4px !important;
+    }
+    
+    footer {
+        padding-top: 25px !important;
+    }
 }
 
 body.menu-open {
@@ -409,7 +473,8 @@ header {
     
     nav ul {
         width: 260px !important;
-        top: 75px !important;
+        top: 0 !important;
+        padding-top: 75px !important;
     }
 }
 
@@ -626,6 +691,15 @@ nav a.active:hover {
     justify-content: center;
     gap: 3px;
     backdrop-filter: blur(10px);
+    /* Prevent any unwanted scrolling behavior */
+    outline: none;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .hamburger-line {
@@ -665,6 +739,28 @@ nav a.active:hover {
 
 .mobile-toggle.active .hamburger-line:nth-child(3) {
     transform: translateY(-7px) rotate(-45deg);
+}
+
+/* Ensure mobile toggle doesn't inherit unwanted button behaviors */
+.mobile-toggle {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 2px solid rgba(255, 255, 255, 0.2) !important;
+    color: inherit !important;
+    font: inherit !important;
+    margin: 0 !important;
+    padding: 10px !important;
+    border-radius: 12px !important;
+    box-sizing: border-box !important;
+    vertical-align: baseline !important;
+    text-align: center !important;
+    text-decoration: none !important;
+    outline: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+    /* Prevent any scroll behavior */
+    scroll-behavior: auto !important;
+    -webkit-overflow-scrolling: auto !important;
 }
 
 /* Hero Section */
@@ -1149,9 +1245,10 @@ nav a.active:hover {
 footer {
     background: var(--dark);
     color: white;
-    padding: 60px 0 20px;
+    padding: 60px 0 0;
     position: relative;
     overflow: hidden;
+    margin-top: 0;
 }
 
 @media (max-width: 900px) {
@@ -1173,12 +1270,30 @@ footer {
         margin-bottom: 0;
     }
     .footer-content {
-        padding-bottom: 30px;
+        padding-bottom: 0;
     }
     .logo-image {
         display: block;
         margin: 0 auto 20px auto;
         max-width: 120px;
+    }
+    
+    /* Ensure moving banner is properly positioned on mobile */
+    .bottom-banner {
+        margin-top: 0;
+        margin-bottom: 0;
+        padding: 6px 0;
+    }
+    
+    footer {
+        padding: 40px 0 0;
+        margin-top: 0;
+    }
+    
+    /* Force remove any spacing between banner and footer */
+    .bottom-banner + footer {
+        margin-top: 0 !important;
+        padding-top: 40px !important;
     }
 }
 
@@ -1503,16 +1618,15 @@ footer::before {
     
     nav ul {
         position: fixed;
-        top: 80px;
+        top: 0;
         left: -320px;
         flex-direction: column;
         background: rgba(27, 67, 50, 0.95);
         width: 280px;
-        padding: 30px 20px;
+        padding: 80px 20px 30px 20px;
         transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         gap: 5px;
-        height: auto;
-        max-height: calc(100vh - 100px);
+        height: 100vh;
         z-index: 1000;
         backdrop-filter: blur(20px);
         overflow-y: auto;
@@ -1682,6 +1796,27 @@ footer::before {
     nav a {
         font-size: 1.2rem;
         padding: 12px 16px;
+    }
+    
+    /* Fix footer and moving banner spacing on small screens */
+    footer {
+        padding: 25px 0 0;
+        margin-top: 0;
+    }
+    
+    .bottom-banner {
+        padding: 4px 0;
+        margin-bottom: 0;
+    }
+    
+    .moving-banner {
+        padding: 4px 0;
+    }
+    
+    /* Force remove any spacing between banner and footer */
+    .bottom-banner + footer {
+        margin-top: 0 !important;
+        padding-top: 25px !important;
     }
 }
 
@@ -1947,6 +2082,13 @@ footer::before {
     position: relative;
 }
 
+/* Mobile specific - make header completely square */
+@media (max-width: 480px) {
+    .modal-header {
+        border-radius: 0 !important;
+    }
+}
+
 .modal-header h2 {
     margin: 0;
     font-family: 'Montserrat', sans-serif;
@@ -2181,7 +2323,7 @@ footer::before {
         width: 100%;
         margin: 0;
         max-height: 70vh;
-        border-radius: 10px;
+        border-radius: 0;
     }
     
     .modal-header {
@@ -2189,6 +2331,7 @@ footer::before {
         position: sticky;
         top: 0;
         z-index: 10;
+        border-radius: 0;
     }
     
     .modal-header h2 {
@@ -2416,4 +2559,44 @@ footer::before {
     max-height: 90%;
     object-fit: contain;
     border-radius: 8px;
+}
+
+/* --- Top Banner Consistency Fixes for Mobile --- */
+.top-banner {
+    height: 35px;
+    min-height: 35px;
+    max-height: 35px;
+    background: var(--gradient-primary);
+    margin-bottom: 0 !important;
+    border-bottom: none !important;
+    box-shadow: 0 2px 10px rgba(27, 67, 50, 0.2);
+    z-index: 1000;
+}
+@media (max-width: 480px) {
+    .top-banner {
+        height: 32px !important;
+        min-height: 32px !important;
+        max-height: 32px !important;
+        box-shadow: none !important;
+        background: var(--gradient-primary) !important;
+    }
+    body {
+        padding-top: 32px !important;
+    }
+}
+@media (max-width: 768px) {
+    .top-banner {
+        height: 35px !important;
+        min-height: 35px !important;
+        max-height: 35px !important;
+        box-shadow: none !important;
+        background: var(--gradient-primary) !important;
+    }
+    body {
+        padding-top: 35px !important;
+    }
+}
+.moving-banner {
+    margin-bottom: 0 !important;
+    border-bottom: none !important;
 }

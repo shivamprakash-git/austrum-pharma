@@ -123,20 +123,28 @@ const mobileToggle = document.querySelector('.mobile-toggle');
 const navMenu = document.querySelector('nav ul');
 const body = document.body;
 let isMenuOpen = false;
+let scrollPosition = 0;
 
 function toggleMenu() {
     isMenuOpen = !isMenuOpen;
     
     if (isMenuOpen) {
+        // Store current scroll position
+        scrollPosition = window.pageYOffset;
         navMenu.classList.add('active');
         body.classList.add('menu-open');
         mobileToggle.classList.add('active');
         mobileToggle.setAttribute('aria-expanded', 'true');
+        // Prevent scrolling
+        body.style.top = `-${scrollPosition}px`;
     } else {
         navMenu.classList.remove('active');
         body.classList.remove('menu-open');
         mobileToggle.classList.remove('active');
         mobileToggle.setAttribute('aria-expanded', 'false');
+        // Restore scroll position
+        body.style.top = '';
+        window.scrollTo(0, scrollPosition);
     }
 }
 
@@ -147,6 +155,9 @@ function closeMenu() {
         body.classList.remove('menu-open');
         mobileToggle.classList.remove('active');
         mobileToggle.setAttribute('aria-expanded', 'false');
+        // Restore scroll position
+        body.style.top = '';
+        window.scrollTo(0, scrollPosition);
     }
 }
 
@@ -157,7 +168,9 @@ if (mobileToggle && navMenu) {
     mobileToggle.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
+        e.stopImmediatePropagation();
         toggleMenu();
+        return false;
     });
 
     // Close mobile menu when clicking a link
