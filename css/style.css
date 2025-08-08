@@ -2052,7 +2052,7 @@ footer::before {
     position: relative;
     animation: slideInUp 0.4s ease-out;
     box-shadow: var(--shadow-heavy);
-    margin: 0;
+    margin: 20px; /* Added margin for spacing from all sides */
     padding: 0;
 }
 
@@ -2321,14 +2321,14 @@ footer::before {
     .modal {
         padding: 0 10px;
         align-items: flex-start;
-        padding-top: 20px;
+        padding-top: 40px; /* Increased top padding for more space */
         box-sizing: border-box;
     }
     
     .modal-content {
-        width: calc(100% - 20px);
-        margin: 0 10px;
-        max-height: 80vh;
+        width: calc(100% - 40px); /* Increased horizontal spacing */
+        margin: 0 20px 20px 20px; /* Increased horizontal spacing */
+        max-height: 70vh; /* Reduced max-height for smaller vertical size */
         border-radius: 0;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     }
