@@ -41,8 +41,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const enlargedImage = document.createElement('img');
             enlargedImage.src = this.src;
             enlargedImage.style.cssText = `
-                max-width: 400px;
-                max-height: 400px;
+                max-width: min(90vw, 400px);
+                max-height: min(80vh, 400px);
                 width: auto;
                 height: auto;
                 object-fit: contain;
