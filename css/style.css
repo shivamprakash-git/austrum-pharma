@@ -257,7 +257,7 @@ header {
     transition: var(--transition);
     backdrop-filter: blur(10px);
     margin-top: -1px; /* overlap to hide any seam */
-    will-change: transform; /* hint to reduce subpixel jitter during resize */
+    /* removed will-change to avoid creating a fixed-position containing block */
 }
 
 @media (max-width: 991px) {
@@ -271,7 +271,6 @@ header {
     justify-content: space-between;
     align-items: center;
     position: relative;
-    contain: layout paint; /* reduce subpixel reflow on resize */
 }
 
 /* Custom Logo */
@@ -449,9 +448,7 @@ header {
 
 /* Extra small screens */
 @media (max-width: 480px) {
-    .header-container {
-        padding: 0 55px !important;
-    }
+    .header-container { padding: 0 48px !important; }
     
     .mobile-toggle {
         left: 8px !important;
@@ -465,10 +462,7 @@ header {
         height: 2px !important;
     }
     
-    .logo-image {
-        height: 42px !important;
-        width: 42px !important;
-    }
+    .logo-image { height: 46px !important; width: 46px !important; }
     
     .logo-main {
         font-size: 1.1rem !important;
@@ -478,11 +472,7 @@ header {
         font-size: 0.55rem !important;
     }
     
-    nav ul {
-        width: 260px !important;
-        top: 0 !important;
-        padding-top: 75px !important;
-    }
+    nav ul { width: 300px !important; top: 0 !important; padding-top: 75px !important; }
 }
 
 /* Very small screens - horizontal orientation */
@@ -1611,18 +1601,19 @@ footer::before {
     }
     
     .header-container {
-        padding: 0 70px;
+        padding: 0 48px; /* bring logo/text closer on small screens */
         position: relative;
         justify-content: center;
         align-items: center;
         min-height: 70px;
+        gap: 8px;
     }
     
     .custom-logo {
         flex: 0 0 auto;
         justify-content: center;
         align-items: center;
-        gap: 12px;
+        gap: 8px; /* reduce spacing between logo and text */
         min-width: 0;
         padding: 0;
         margin: 0 auto;
@@ -1640,7 +1631,7 @@ footer::before {
         left: -320px;
         flex-direction: column;
         background: rgba(27, 67, 50, 0.95);
-        width: 280px;
+        width: 300px;
         padding: 80px 20px 30px 20px;
         transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         gap: 5px;
