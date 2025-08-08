@@ -303,7 +303,7 @@ header::after { bottom: -1px; }
 
 /* Custom Logo */
 .custom-logo {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     text-decoration: none;
     gap: 15px;
@@ -341,11 +341,7 @@ header::after { bottom: -1px; }
 
 .logo-image:hover { box-shadow: var(--shadow-medium); }
 
-.logo-text {
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* anchor text vertically with logo */
-}
+.logo-text { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; }
 
 .logo-main {
     font-size: 1.8rem;
@@ -472,10 +468,18 @@ header::after { bottom: -1px; }
     .logo-image { height: 76px !important; width: 76px !important; }
     .logo-main { font-size: 1.35rem !important; line-height: 1.05 !important; }
     .logo-tagline { font-size: 0.68rem !important; line-height: 1.1 !important; }
-    .custom-logo { gap: 2px !important; }
-    .logo-text { margin-top: 0 !important; min-height: 26px !important; gap: 0 !important; }
-    .logo-tagline { margin-top: 1px !important; }
+    .custom-logo { gap: 0 !important; }
+    .logo-text { margin-top: -2px !important; min-height: 26px !important; gap: 0 !important; }
+    .logo-tagline { margin-top: 0 !important; }
     nav ul { width: 300px !important; top: 0 !important; padding-top: 75px !important; }
+}
+
+/* Smooth alignment during stacked->inline transition */
+@media (min-width: 481px) and (max-width: 600px) {
+    .custom-logo { gap: 10px; align-items: center; }
+    .logo-text { margin-top: 0; justify-content: center; align-items: center; }
+    .logo-main { line-height: 1.1; }
+    .logo-tagline { margin-top: 2px; }
 }
 
 /* Very small screens - horizontal orientation */
