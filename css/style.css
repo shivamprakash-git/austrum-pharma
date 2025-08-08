@@ -55,6 +55,7 @@ body {
     position: fixed;
     top: 0;
     left: 0;
+    right: 0;
     width: 100%;
     z-index: 1000;
     height: var(--top-banner-height);
@@ -250,12 +251,13 @@ header {
     color: var(--white);
     padding: 1rem 0;
     position: sticky;
-    top: 0;
+    top: calc(var(--top-banner-height) * 0); /* ensure header sticks directly under banner without gaps */
     z-index: 1000;
     box-shadow: var(--shadow-medium);
     transition: var(--transition);
     backdrop-filter: blur(10px);
     margin-top: -1px; /* overlap to hide any seam */
+    will-change: transform; /* hint to reduce subpixel jitter during resize */
 }
 
 @media (max-width: 991px) {
@@ -269,6 +271,7 @@ header {
     justify-content: space-between;
     align-items: center;
     position: relative;
+    contain: layout paint; /* reduce subpixel reflow on resize */
 }
 
 /* Custom Logo */
@@ -279,6 +282,7 @@ header {
     gap: 15px;
     transition: var(--transition);
     animation: fadeInLeft 1s ease-out;
+    will-change: transform;
 }
 
 .custom-logo:hover {
@@ -311,13 +315,14 @@ header {
 }
 
 .logo-image:hover {
-    transform: rotate(5deg) scale(1.1);
+    transform: rotate(3deg) scale(1.05);
     box-shadow: var(--shadow-medium);
 }
 
 .logo-text {
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
 }
 
 .logo-main {
@@ -327,6 +332,7 @@ header {
     color: var(--white);
     line-height: 1.1;
     transition: var(--transition);
+    transform: translateZ(0);
 }
 
 .logo-tagline {
@@ -337,6 +343,7 @@ header {
     text-transform: uppercase;
     margin-top: 3px;
     transition: var(--transition);
+    transform: translateZ(0);
 }
 
 /* Tablet and larger mobile screens */
@@ -355,6 +362,7 @@ header {
         flex-direction: column;
         text-align: center;
         justify-content: center;
+        align-items: center;
     }
     
     .logo-main {
@@ -394,7 +402,7 @@ header {
         padding: 0;
         display: block;
         line-height: 0;
-        transform: scale(1.1);
+        transform: none; /* prevent layout shift during resize */
     }
     
     .logo-text {
@@ -403,7 +411,7 @@ header {
         align-items: center;
         justify-content: flex-start;
         text-align: center;
-        margin: -20px 0 0 0;
+        margin: 8px 0 0 0; /* avoid negative margins causing jump */
         padding: 0;
     }
     
