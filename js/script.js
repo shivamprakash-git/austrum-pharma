@@ -242,7 +242,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Header scroll effect
 const header = document.querySelector('header');
-let lastScrollY = window.scrollY;
 
 window.addEventListener('scroll', () => {
     const currentScrollY = window.scrollY;
@@ -255,7 +254,7 @@ window.addEventListener('scroll', () => {
         header.style.backdropFilter = 'blur(10px)';
     }
     
-    lastScrollY = currentScrollY;
+    // no-op
 });
 
 // Back to top button functionality

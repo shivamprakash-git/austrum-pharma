@@ -204,17 +204,7 @@ body.menu-open {
     }
 }
 
-@keyframes pulse {
-    0% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.05);
-    }
-    100% {
-        transform: scale(1);
-    }
-}
+/* Removed duplicate 'pulse' keyframes; kept single definition later */
 
 @keyframes float {
     0%, 100% {
@@ -1406,27 +1396,39 @@ footer::before {
     to { opacity: 1; }
 }
 
-@keyframes fadeInDown {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
+/* Lightbox effects (from enhanced-animations.css) */
+@keyframes logoGlow {
+    0% {
+        box-shadow:
+            0 0 50px rgba(82, 183, 136, 0.6),
+            0 0 100px rgba(82, 183, 136, 0.4),
+            0 0 150px rgba(82, 183, 136, 0.2),
+            0 20px 40px rgba(0, 0, 0, 0.3);
+        transform: scale(1);
     }
-    to {
-        opacity: 1;
-        transform: translateY(0);
+    100% {
+        box-shadow:
+            0 0 70px rgba(82, 183, 136, 0.8),
+            0 0 140px rgba(82, 183, 136, 0.6),
+            0 0 200px rgba(82, 183, 136, 0.4),
+            0 25px 50px rgba(0, 0, 0, 0.4);
+        transform: scale(1.02);
     }
 }
 
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
+@keyframes textGlow {
+    0% { text-shadow: 0 0 20px rgba(82, 183, 136, 0.8); }
+    100% {
+        text-shadow:
+            0 0 30px rgba(82, 183, 136, 1),
+            0 0 40px rgba(82, 183, 136, 0.8),
+            0 0 50px rgba(82, 183, 136, 0.6);
     }
 }
+
+/* Removed duplicate fadeInDown (not referenced) */
+
+/* Removed duplicate fadeInUp (already defined at top) */
 
 @keyframes expandLine {
     from { width: 0; }
@@ -1758,14 +1760,7 @@ footer::before {
     }
 }
 
-@keyframes slideInLeft {
-    from {
-        transform: translateX(-100%);
-    }
-    to {
-        transform: translateX(0);
-    }
-}
+/* Removed unused slideInLeft keyframes */
 
 @media (max-width: 480px) {
     .hero h1 {
@@ -1921,15 +1916,7 @@ footer::before {
     }
 }
 
-@keyframes slideInRight {
-    from { transform: translateX(100%); }
-    to { transform: translateX(0); }
-}
-
-@keyframes slideOutRight {
-    from { transform: translateX(0); }
-    to { transform: translateX(100%); }
-}
+/* Removed unused slideInRight/slideOutRight keyframes */
 
 @keyframes slideInDown {
     from { transform: translateY(-100%); }
@@ -2016,14 +2003,7 @@ footer::before {
     letter-spacing: 1px;
 }
 
-@keyframes pulse {
-    0%, 100% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.1);
-    }
-}
+/* Removed duplicate 'pulse' (scale) keyframes; using opacity-based pulse above */
 
 /* Modal Styles */
 .modal {
