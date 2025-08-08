@@ -475,11 +475,11 @@ header::after { bottom: -1px; }
 }
 
 /* Smooth alignment during stacked->inline transition */
-@media (min-width: 481px) and (max-width: 600px) {
-    .custom-logo { gap: 10px; align-items: center; }
+@media (min-width: 481px) and (max-width: 640px) {
+    .custom-logo { gap: 8px; align-items: center; }
     .logo-text { margin-top: 0; justify-content: center; align-items: center; }
-    .logo-main { line-height: 1.1; }
-    .logo-tagline { margin-top: 2px; }
+    .logo-main { line-height: 1.05; }
+    .logo-tagline { margin-top: 0; }
 }
 
 /* Very small screens - horizontal orientation */
@@ -1619,8 +1619,8 @@ footer::before {
     .custom-logo {
         flex: 0 0 auto;
         justify-content: center;
-        align-items: center;
-        gap: 8px; /* reduce spacing between logo and text */
+        align-items: center; /* keep vertical centering when switching layout */
+        gap: 6px; /* slightly tighter */
         min-width: 0;
         padding: 0;
         margin: 0 auto;
@@ -1630,6 +1630,9 @@ footer::before {
         min-width: 0;
         flex-shrink: 0;
         text-align: center;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center; /* ensure text block is centered against logo */
     }
     
     nav ul {
