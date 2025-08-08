@@ -15,6 +15,7 @@
     --shadow-heavy: 0 15px 50px rgba(27, 67, 50, 0.2);
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-slow: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    --top-banner-height: 35px;
 }
 
 * {
@@ -46,6 +47,8 @@ body {
     font-size: 14px;
     box-shadow: 0 2px 10px rgba(27, 67, 50, 0.2);
     margin: 0;
+    -webkit-transform: translate3d(0,0,0);
+    transform: translate3d(0,0,0);
 }
 
 .top-banner {
@@ -54,9 +57,11 @@ body {
     left: 0;
     width: 100%;
     z-index: 1000;
-    /* Performance optimizations for mobile scrolling */
-    will-change: transform;
-    transform: translateZ(0); /* Force hardware acceleration */
+    height: var(--top-banner-height);
+    min-height: var(--top-banner-height);
+    max-height: var(--top-banner-height);
+    background: var(--gradient-primary);
+    box-shadow: none; /* prevent seam flicker */
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
 }
@@ -64,9 +69,9 @@ body {
 /* Make bottom banner identical to top banner */
 .bottom-banner {
     background: var(--gradient-primary) !important;
-    height: 35px;
-    min-height: 35px;
-    max-height: 35px;
+    height: var(--top-banner-height);
+    min-height: var(--top-banner-height);
+    max-height: var(--top-banner-height);
     color: var(--white);
     padding: 8px 0;
     overflow: hidden;
@@ -82,17 +87,15 @@ body {
 @media (max-width: 768px) {
     .bottom-banner {
         padding: 6px 0 !important;
-        height: 35px !important;
-        min-height: 35px !important;
-        max-height: 35px !important;
+        height: var(--top-banner-height) !important;
+        min-height: var(--top-banner-height) !important;
+        max-height: var(--top-banner-height) !important;
     }
 }
 @media (max-width: 480px) {
+    :root { --top-banner-height: 32px; }
     .bottom-banner {
         padding: 4px 0 !important;
-        height: 32px !important;
-        min-height: 32px !important;
-        max-height: 32px !important;
     }
 }
 
@@ -118,7 +121,7 @@ body {
 
 /* Adjust body padding for top banner */
 body {
-    padding-top: 35px;
+    padding-top: var(--top-banner-height);
 }
 
 /* Ensure no spacing between bottom banner and footer */
@@ -252,7 +255,7 @@ header {
     box-shadow: var(--shadow-medium);
     transition: var(--transition);
     backdrop-filter: blur(10px);
-    animation: slideDown 0.8s ease-out;
+    margin-top: -1px; /* overlap to hide any seam */
 }
 
 @media (max-width: 991px) {
@@ -2555,59 +2558,4 @@ footer::before {
     border-radius: 8px;
 }
 
-/* --- Top Banner Consistency Fixes for Mobile --- */
-.top-banner {
-    height: 35px;
-    min-height: 35px;
-    max-height: 35px;
-    background: var(--gradient-primary);
-    margin-bottom: 0 !important;
-    border-bottom: none !important;
-    /* Remove box-shadow to prevent mobile scroll flickering */
-    box-shadow: none;
-    z-index: 1000;
-    /* Add subtle border instead of shadow for better performance */
-    border-bottom: 1px solid rgba(27, 67, 50, 0.3);
-}
-@media (max-width: 480px) {
-    .top-banner {
-        height: 32px !important;
-        min-height: 32px !important;
-        max-height: 32px !important;
-        box-shadow: none !important;
-        background: var(--gradient-primary) !important;
-        /* Additional mobile optimizations */
-        -webkit-transform: translate3d(0, 0, 0);
-        transform: translate3d(0, 0, 0);
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-    }
-    body {
-        padding-top: 32px !important;
-    }
-}
-@media (max-width: 768px) {
-    .top-banner {
-        height: 35px !important;
-        min-height: 35px !important;
-        max-height: 35px !important;
-        box-shadow: none !important;
-        background: var(--gradient-primary) !important;
-        /* Additional tablet optimizations */
-        -webkit-transform: translate3d(0, 0, 0);
-        transform: translate3d(0, 0, 0);
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-    }
-    body {
-        padding-top: 35px !important;
-    }
-}
-.moving-banner {
-    margin-bottom: 0 !important;
-    border-bottom: none !important;
-}
+/* Removed legacy duplicate top-banner overrides and forced borders */
