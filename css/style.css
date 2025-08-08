@@ -66,6 +66,19 @@ body {
     -webkit-backface-visibility: hidden;
 }
 
+/* Hairline overlap to mask subpixel seams under banner */
+.top-banner::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 1px;
+    background: var(--gradient-primary);
+    pointer-events: none;
+    opacity: 0.999;
+}
+
 /* Make bottom banner identical to top banner */
 .bottom-banner {
     background: var(--gradient-primary) !important;
@@ -255,8 +268,25 @@ header {
     box-shadow: var(--shadow-medium);
     transition: var(--transition);
     backdrop-filter: blur(10px);
-    margin-top: 0; /* no overlap to avoid seam on resize */
+    margin-top: 0; /* no overlap; hairlines handle seams */
+    position: sticky;
 }
+
+/* Hairline overlaps to mask seams above and below header during resize */
+header::before,
+header::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--gradient-primary);
+    pointer-events: none;
+    opacity: 0.999;
+}
+
+header::before { top: -1px; }
+header::after { bottom: -1px; }
 
 @media (max-width: 991px) {
     header {
@@ -279,7 +309,7 @@ header {
     gap: 15px;
     transition: var(--transition);
     animation: fadeInLeft 1s ease-out;
-    will-change: transform;
+    /* avoid will-change to prevent composition jumps during resize */
 }
 
 .custom-logo:hover {
@@ -319,7 +349,7 @@ header {
 .logo-text {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center; /* anchor text vertically with logo */
 }
 
 .logo-main {
@@ -354,13 +384,7 @@ header {
         align-self: center;
     }
     
-    .logo-text {
-        display: flex !important;
-        flex-direction: column;
-        text-align: center;
-        justify-content: center;
-        align-items: center;
-    }
+    .logo-text { display: flex !important; flex-direction: column; text-align: center; justify-content: center; align-items: center; }
     
     .logo-main {
         font-size: 1.3rem;
