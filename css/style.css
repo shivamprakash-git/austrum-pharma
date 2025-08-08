@@ -472,8 +472,9 @@ header::after { bottom: -1px; }
     .logo-image { height: 76px !important; width: 76px !important; }
     .logo-main { font-size: 1.35rem !important; line-height: 1.05 !important; }
     .logo-tagline { font-size: 0.68rem !important; line-height: 1.1 !important; }
-    .custom-logo { gap: 6px !important; }
-    .logo-text { margin-top: 2px !important; min-height: 26px !important; gap: 0 !important; }
+    .custom-logo { gap: 2px !important; }
+    .logo-text { margin-top: 0 !important; min-height: 26px !important; gap: 0 !important; }
+    .logo-tagline { margin-top: 1px !important; }
     nav ul { width: 300px !important; top: 0 !important; padding-top: 75px !important; }
 }
 
