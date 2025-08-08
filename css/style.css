@@ -61,7 +61,7 @@ body {
     min-height: var(--top-banner-height);
     max-height: var(--top-banner-height);
     background: linear-gradient(135deg, #1B4332 1px, #2D5A3D 50%, #40916C 100%);
-    box-shadow: 0 0 0 1px rgba(27,67,50,0.001); /* 1px hairline in same color range to mask subpixel gaps */
+    box-shadow: 0 1px 0 rgba(27, 67, 50, 0.25); /* bottom hairline masks subpixel gaps */
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
 }
@@ -106,10 +106,8 @@ body {
     }
 }
 @media (max-width: 480px) {
-    :root { --top-banner-height: 32px; }
-    .bottom-banner {
-        padding: 4px 0 !important;
-    }
+    :root { --top-banner-height: 34px; } /* slightly larger to avoid fractional px */
+    .bottom-banner { padding: 4px 0 !important; }
 }
 
 .banner-content {
