@@ -309,6 +309,7 @@ header::after { bottom: -1px; }
     gap: 15px;
     transition: var(--transition);
     animation: fadeInLeft 1s ease-out;
+    -webkit-tap-highlight-color: transparent;
     /* avoid will-change to prevent composition jumps during resize */
 }
 
