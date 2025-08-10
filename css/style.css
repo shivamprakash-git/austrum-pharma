@@ -1682,7 +1682,7 @@ footer::before {
     
     nav a {
         font-size: 1rem;
-        padding: 14px 20px;
+        padding: 14px 20px 14px 40px; /* Increased left padding */
         border-radius: 10px;
         display: block;
         text-align: left;
@@ -1690,6 +1690,8 @@ footer::before {
         margin: 2px 0;
         transition: all 0.2s ease-out;
         border-left: 3px solid transparent;
+        position: relative;
+        left: 20px; /* Increased shift to the right */
     }
     
     nav a:hover {
