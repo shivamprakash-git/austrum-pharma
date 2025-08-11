@@ -135,6 +135,21 @@ function toggleMenu() {
         body.classList.add('menu-open');
         mobileToggle.classList.add('active');
         mobileToggle.setAttribute('aria-expanded', 'true');
+        // Clear any residual focus on links to avoid sticky highlight on touch
+        document.querySelectorAll('nav a').forEach(a => a.blur());
+        // Inject a top-centered faded close button into the mobile menu
+        if (!navMenu.querySelector('.mobile-close')) {
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'mobile-close';
+            closeBtn.setAttribute('aria-label', 'Close menu');
+            closeBtn.innerHTML = '<i class="fas fa-times"></i>';
+            closeBtn.addEventListener('click', (ev) => {
+                ev.preventDefault();
+                ev.stopPropagation();
+                closeMenu();
+            });
+            navMenu.appendChild(closeBtn);
+        }
         // Prevent scrolling
         body.style.top = `-${scrollPosition}px`;
     } else {
@@ -148,16 +163,21 @@ function toggleMenu() {
     }
 }
 
-function closeMenu() {
+function closeMenu(skipRestore = false) {
     if (isMenuOpen) {
         isMenuOpen = false;
         navMenu.classList.remove('active');
         body.classList.remove('menu-open');
         mobileToggle.classList.remove('active');
         mobileToggle.setAttribute('aria-expanded', 'false');
-        // Restore scroll position
+        // Remove the injected close button if present
+        const injected = navMenu.querySelector('.mobile-close');
+        if (injected) injected.remove();
+        // Restore scroll position unless we're navigating to a section
         body.style.top = '';
-        window.scrollTo(0, scrollPosition);
+        if (!skipRestore) {
+            window.scrollTo(0, scrollPosition);
+        }
     }
 }
 
@@ -173,10 +193,10 @@ if (mobileToggle && navMenu) {
         return false;
     });
 
-    // Close mobile menu when clicking a link
+    // Close mobile menu when clicking a link (don't restore scroll, we'll handle smooth scroll)
     document.querySelectorAll('nav a').forEach(link => {
         link.addEventListener('click', () => {
-            closeMenu();
+            closeMenu(true);
         });
     });
 
@@ -203,19 +223,43 @@ if (mobileToggle && navMenu) {
 }
 
 // Smooth scrolling for anchor links
+// Helper to compute total fixed top offset (header + top banner if fixed)
+function getTopOffset() {
+    const headerEl = document.querySelector('header');
+    const bannerEl = document.querySelector('.top-banner');
+    const headerHeight = headerEl ? headerEl.offsetHeight : 0;
+    const bannerIsFixed = bannerEl ? getComputedStyle(bannerEl).position === 'fixed' : false;
+    const bannerHeight = bannerEl && bannerIsFixed ? bannerEl.offsetHeight : 0;
+    return headerHeight + bannerHeight;
+}
+
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function(e) {
         e.preventDefault();
-        
+
         const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            window.scrollTo({
-                top: target.offsetTop - 80,
-                behavior: 'smooth'
-            });
-        }
+        if (!target) return;
+
+        // Compute dynamic top offset (header + fixed top banner) to align section exactly at the top
+        const offset = getTopOffset();
+        const targetTop = target.getBoundingClientRect().top + window.pageYOffset - offset;
+
+        // If menu was open, give it a tick to close before scrolling
+        const delay = isMenuOpen ? 120 : 0;
+        setTimeout(() => {
+            window.scrollTo({ top: Math.max(targetTop, 0), behavior: 'smooth' });
+        }, delay);
     });
 });
+
+// Keep a CSS var up-to-date for header height so CSS can use scroll-margin-top fallbacks
+function updateHeaderHeightVar() {
+    const total = getTopOffset();
+    document.documentElement.style.setProperty('--header-height', `${total}px`);
+}
+
+document.addEventListener('DOMContentLoaded', updateHeaderHeightVar);
+window.addEventListener('resize', updateHeaderHeightVar);
 
 // Scroll Animations
 const observerOptions = {
@@ -600,11 +644,13 @@ document.addEventListener('DOMContentLoaded', function() {
         modalContactBtn.addEventListener('click', function(e) {
             e.preventDefault();
             closeModal();
-            // Smooth scroll to contact section
+            // Smooth scroll to contact section with header+banner-aware offset
             setTimeout(() => {
                 const contactSection = document.getElementById('contact');
                 if (contactSection) {
-                    contactSection.scrollIntoView({ behavior: 'smooth' });
+                    const offset = getTopOffset();
+                    const top = contactSection.getBoundingClientRect().top + window.pageYOffset - offset;
+                    window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' });
                 }
             }, 400);
         });

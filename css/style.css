@@ -18,6 +18,11 @@
     --top-banner-height: 35px;
 }
 
+/* Ensure anchored sections are fully visible below the fixed header */
+#about, #services, #products, #contact {
+    scroll-margin-top: calc(var(--header-height, 80px) + 8px);
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -614,6 +619,7 @@ nav a {
     position: relative;
     overflow: hidden;
     display: inline-block;
+    -webkit-tap-highlight-color: transparent; /* prevent sticky highlight on touch */
 }
 
 /* Shimmer effect on hover */
@@ -734,16 +740,23 @@ nav a.active:hover {
 
 /* Hamburger Animation States */
 .mobile-toggle.active .hamburger-line:nth-child(1) {
-    transform: translateY(7px) rotate(45deg);
+    transform: none;
 }
 
 .mobile-toggle.active .hamburger-line:nth-child(2) {
-    opacity: 0;
-    transform: scaleX(0);
+    opacity: 1;
+    transform: none;
 }
 
 .mobile-toggle.active .hamburger-line:nth-child(3) {
-    transform: translateY(-7px) rotate(-45deg);
+    transform: none;
+}
+
+/* Hide toggle button when active so no icon is visible */
+.mobile-toggle.active {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
 }
 
 /* Ensure mobile toggle doesn't inherit unwanted button behaviors */
@@ -1652,10 +1665,36 @@ footer::before {
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
         box-sizing: border-box;
-        border-radius: 0 15px 15px 0;
+        border-radius: 0;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         border: 1px solid rgba(255, 255, 255, 0.1);
     }
+
+    /* Close button inside mobile menu */
+    .mobile-close {
+        position: absolute;
+        top: 18px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0.55;
+        cursor: pointer;
+        z-index: 1100; /* above list items */
+        transition: opacity 0.2s ease, transform 0.2s ease, background 0.2s ease;
+        backdrop-filter: blur(6px);
+    }
+
+    .mobile-close:hover { opacity: 0.85; }
+    .mobile-close:active { transform: translateX(-50%) scale(0.96); }
+    .mobile-close i { pointer-events: none; }
     
     nav ul.active {
         left: 0;
@@ -1682,23 +1721,34 @@ footer::before {
     
     nav a {
         font-size: 1rem;
-        padding: 14px 20px 14px 40px; /* Increased left padding */
+        padding: 14px 20px; /* symmetric padding */
         border-radius: 10px;
         display: block;
-        text-align: left;
+        text-align: center; /* centered for symmetry */
         color: var(--white);
         margin: 2px 0;
         transition: all 0.2s ease-out;
-        border-left: 3px solid transparent;
+        border-left: none; /* remove asymmetry */
         position: relative;
-        left: 20px; /* Increased shift to the right */
+        left: 0; /* remove horizontal shift */
     }
     
     nav a:hover {
         background: rgba(255, 255, 255, 0.15);
         color: var(--white);
-        transform: translateX(5px);
-        border-left-color: var(--accent);
+        transform: none; /* keep centered/symmetric */
+    }
+    
+    /* Avoid sticky hover/active highlight on touch devices */
+    @media (hover: none) {
+        nav a:hover { background: transparent !important; }
+    }
+    
+    /* Avoid default focus/active background so items don't appear selected unintentionally */
+    nav a:focus,
+    nav a:active {
+        background: transparent !important;
+        outline: none;
     }
     
     nav a.active {
