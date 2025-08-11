@@ -24,6 +24,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 cursor: pointer;
                 opacity: 0;
                 transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                padding: 4vh 4vw;
+                overflow: auto;
             `;
             
             // Create container for logo and effects
@@ -33,6 +35,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 display: flex;
                 flex-direction: column;
                 align-items: center;
+                justify-content: center;
+                max-width: 92vw;
+                max-height: 92vh;
+                gap: 8px;
+                padding: 16px;
+                box-sizing: border-box;
                 transform: scale(0.5) rotateY(180deg);
                 transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
             `;
@@ -41,8 +49,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const enlargedImage = document.createElement('img');
             enlargedImage.src = this.src;
             enlargedImage.style.cssText = `
-                max-width: min(90vw, 250px);
-                max-height: min(80vh, 250px);
+                max-width: min(70vw, 220px);
+                max-height: min(40vh, 200px);
                 width: auto;
                 height: auto;
                 object-fit: contain;
@@ -67,26 +75,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 <h2 style="
                     color: white;
                     font-family: 'Montserrat', sans-serif;
-                    font-size: ${isSmallMobile ? '1.8rem' : isMobile ? '2.1rem' : '2.5rem'};
+                    font-size: clamp(1.2rem, 4.5vmin, 2rem);
                     font-weight: 700;
                     text-align: center;
-                    margin: 30px 0 10px 0;
-                    padding: 0 ${isSmallMobile ? '20px' : isMobile ? '15px' : '10px'};
-                    text-shadow: 0 0 20px rgba(82, 183, 136, 0.8);
-                    letter-spacing: ${isSmallMobile ? '1px' : isMobile ? '2px' : '3px'};
+                    margin: 16px 0 6px 0;
+                    padding: 0 5vw;
+                    text-shadow: 0 0 16px rgba(82, 183, 136, 0.7);
+                    letter-spacing: 1.5px;
                     animation: textGlow 2s ease-in-out infinite alternate;
                     word-wrap: break-word;
+                    overflow-wrap: anywhere;
                     hyphens: auto;
-                    line-height: 1.2;
+                    line-height: 1.15;
                 ">AUSTRUM PHARMACEUTICALS</h2>
                 <p style="
                     color: rgba(255, 255, 255, 0.9);
                     font-family: 'Open Sans', sans-serif;
-                    font-size: ${isSmallMobile ? '1rem' : isMobile ? '1.1rem' : '1.2rem'};
+                    font-size: clamp(0.8rem, 2.2vmin, 0.95rem);
                     text-align: center;
                     margin: 0;
-                    padding: 0 ${isSmallMobile ? '20px' : isMobile ? '15px' : '10px'};
-                    letter-spacing: ${isSmallMobile ? '1px' : '2px'};
+                    padding: 0 6vw;
+                    letter-spacing: 1.2px;
                     text-transform: uppercase;
                     animation: fadeInUp 1s ease-out 0.5s both;
                 ">Your Health Our Priority</p>
