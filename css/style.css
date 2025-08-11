@@ -1405,6 +1405,7 @@ footer::before {
     color: white;
     border-radius: 50%;
     transition: var(--transition);
+    text-decoration: none;
 }
 
 .social-links a:hover {
