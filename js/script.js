@@ -400,48 +400,86 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentIndex = 0;
     let touchStartX = 0;
     let touchEndX = 0;
-    let isZoomed = false; // Track zoom state
+    // Track zoom and pan state
+    let isZoomed = false;
     let initialDistance = 0;
     let currentScale = 1;
+    let startX = 0;
+    let startY = 0;
+    let translateX = 0;
+    let translateY = 0;
     const ZOOM_THRESHOLD = 1.1; // 10% zoom threshold
 
-    // Prevent touch events when zoomed
-    function preventTouch(e) {
-        // Always prevent default for two-finger touch to avoid page zooming
-        if (e.touches && e.touches.length > 1) {
+    // Update image transform with current scale and position
+    function updateImageTransform() {
+        modalImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentScale})`;
+    }
+
+    // Reset image transform to default
+    function resetImageTransform() {
+        currentScale = 1;
+        translateX = 0;
+        translateY = 0;
+        updateImageTransform();
+        isZoomed = false;
+    }
+
+    // Handle touch events for zooming and panning
+    function handleTouch(e) {
+        // Only prevent default for multi-touch or when zoomed
+        if (e.touches.length > 1 || isZoomed) {
             e.preventDefault();
             e.stopPropagation();
-            
-            // Calculate the distance between the two fingers
+        }
+
+        // Handle multi-touch (pinch zoom)
+        if (e.touches.length === 2) {
             const touch1 = e.touches[0];
             const touch2 = e.touches[1];
             const distance = Math.hypot(
                 touch2.pageX - touch1.pageX,
                 touch2.pageY - touch1.pageY
             );
-            
-            if (initialDistance === 0) {
+
+            if (e.type === 'touchstart') {
                 initialDistance = distance;
-            } else {
-                // Check if zooming in/out
-                const scale = distance / initialDistance;
-                currentScale = scale;
-                
-                // If zoomed in beyond threshold, prevent default touch behavior
-                if (scale > ZOOM_THRESHOLD) {
-                    isZoomed = true;
-                    e.preventDefault();
-                    e.stopPropagation();
-                    return false;
-                } else if (scale < 1) {
-                    // If zoomed back to normal or less
-                    isZoomed = false;
+            } else if (e.type === 'touchmove') {
+                if (initialDistance > 0) {
+                    const scale = Math.min(Math.max(distance / initialDistance, 1), 3);
+                    currentScale = scale;
+                    isZoomed = scale > 1.1;
+                    updateImageTransform();
                 }
+            } else if (e.type === 'touchend' || e.type === 'touchcancel') {
+                if (currentScale < 1.1) {
+                    resetImageTransform();
+                }
+                initialDistance = 0;
             }
-        } else if (isZoomed) {
-            // If already zoomed, prevent single touch events from scrolling
-            e.preventDefault();
-            e.stopPropagation();
+            return false;
+        }
+        
+        // Handle single touch (panning when zoomed)
+        if (isZoomed && e.touches.length === 1) {
+            const touch = e.touches[0];
+            
+            if (e.type === 'touchstart') {
+                startX = touch.clientX - translateX;
+                startY = touch.clientY - translateY;
+            } else if (e.type === 'touchmove') {
+                // Calculate new position with boundaries
+                const maxX = (currentScale - 1) * modalImg.width / 2;
+                const maxY = (currentScale - 1) * modalImg.height / 2;
+                
+                translateX = touch.clientX - startX;
+                translateY = touch.clientY - startY;
+                
+                // Apply boundaries
+                translateX = Math.min(Math.max(translateX, -maxX), maxX);
+                translateY = Math.min(Math.max(translateY, -maxY), maxY);
+                
+                updateImageTransform();
+            }
             return false;
         }
         
@@ -450,21 +488,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Add touch event listeners to the image
     function addTouchListeners() {
-        modalImg.addEventListener('touchstart', preventTouch, { passive: false });
-        modalImg.addEventListener('touchmove', preventTouch, { passive: false });
-        modalImg.addEventListener('touchend', (e) => {
-            // Reset zoom tracking when touch ends
-            initialDistance = 0;
-            preventTouch(e);
-        }, { passive: false });
-        modalImg.addEventListener('touchcancel', (e) => {
-            // Reset zoom tracking when touch is cancelled
-            initialDistance = 0;
-            isZoomed = false;
-            preventTouch(e);
-        }, { passive: false });
+        // Add touch event listeners for zoom and pan
+        modalImg.addEventListener('touchstart', handleTouch, { passive: false });
+        modalImg.addEventListener('touchmove', handleTouch, { passive: false });
+        modalImg.addEventListener('touchend', handleTouch, { passive: false });
+        modalImg.addEventListener('touchcancel', handleTouch, { passive: false });
         
-        // Disable double-tap zoom on the image
+        // Disable default gesture handling
         modalImg.addEventListener('gesturestart', function(e) {
             e.preventDefault();
             e.stopPropagation();
@@ -473,34 +503,48 @@ document.addEventListener('DOMContentLoaded', () => {
         // Handle double tap for zoom in/out
         let lastTap = 0;
         modalImg.addEventListener('touchend', function(e) {
+            // Only handle single tap for double tap detection
+            if (e.touches && e.touches.length > 0) return;
+            
             const currentTime = new Date().getTime();
             const tapLength = currentTime - lastTap;
+            
             if (tapLength < 300 && tapLength > 0) {
                 // Double tap detected
                 e.preventDefault();
                 e.stopPropagation();
                 
-                if (currentScale > 1) {
+                if (isZoomed) {
                     // If zoomed in, zoom out
-                    modalImg.style.transform = '';
-                    currentScale = 1;
-                    isZoomed = false;
+                    resetImageTransform();
                 } else {
                     // If not zoomed, zoom in
-                    modalImg.style.transform = 'scale(2)';
                     currentScale = 2;
                     isZoomed = true;
+                    updateImageTransform();
                 }
             }
             lastTap = currentTime;
-        }, { passive: false });
+        });
+        
+        // Add click handler to modal overlay to close when clicking outside image
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
     }
 
     // Remove touch event listeners
     function removeTouchListeners() {
-        modalImg.removeEventListener('touchmove', preventTouch);
-        modalImg.removeEventListener('touchend', preventTouch);
-        modalImg.removeEventListener('touchcancel', preventTouch);
+        modalImg.removeEventListener('touchstart', handleTouch);
+        modalImg.removeEventListener('touchmove', handleTouch);
+        modalImg.removeEventListener('touchend', handleTouch);
+        modalImg.removeEventListener('touchcancel', handleTouch);
+        modalImg.removeEventListener('gesturestart', function() {});
+        
+        // Reset zoom and pan state
+        resetImageTransform();
     }
 
     productCards.forEach(card => {
@@ -725,29 +769,39 @@ document.addEventListener('DOMContentLoaded', () => {
     // Touch event handling for swiping
     const swipeThreshold = 50; // Minimum distance to trigger a swipe
     
-    // Add touch events to the image container
+    // Add touch events to the image for swiping
     const galleryContent = document.querySelector('.gallery-content');
     
-    // Handle touch events for mobile swipe
-    modal.addEventListener('touchstart', (e) => {
+    // Handle touch events for mobile swipe - only on the image
+    modalImg.addEventListener('touchstart', (e) => {
         if (!isZoomed) { // Only handle swipe if not zoomed
             touchStartX = e.changedTouches[0].screenX;
+            touchStartY = e.changedTouches[0].screenY;
         } else {
             e.preventDefault();
         }
     }, { passive: false });
 
-    modal.addEventListener('touchend', (e) => {
+    modalImg.addEventListener('touchend', (e) => {
         if (!isZoomed) { // Only handle swipe if not zoomed
             touchEndX = e.changedTouches[0].screenX;
-            handleSwipe();
+            const touchEndY = e.changedTouches[0].screenY;
+            
+            // Only handle horizontal swipes (not vertical scrolls)
+            const deltaX = Math.abs(touchEndX - touchStartX);
+            const deltaY = Math.abs(touchEndY - touchStartY);
+            
+            if (deltaX > deltaY) { // Horizontal swipe
+                e.preventDefault();
+                handleSwipe();
+            }
         } else {
             e.preventDefault();
         }
     }, { passive: false });
     
     // Prevent default touch behavior when zoomed
-    modal.addEventListener('touchmove', (e) => {
+    modalImg.addEventListener('touchmove', (e) => {
         if (isZoomed) {
             e.preventDefault();
         }
