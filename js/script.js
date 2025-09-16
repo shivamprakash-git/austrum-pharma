@@ -447,8 +447,15 @@ document.addEventListener('DOMContentLoaded', () => {
     function showProduct(newIndex) {
         if (isAnimating) return;
         
-        // Don't do anything if we're already on this image
-        if (newIndex === currentProductIndex) return;
+        // Prevent going beyond the first or last image
+        if (newIndex >= products.length) {
+            return; // Stop at the last image
+        } else if (newIndex < 0) {
+            newIndex = 0; // Stop at the first image
+        }
+        
+        // Don't do anything if we're already on this image or trying to go beyond boundaries
+        if (newIndex === currentProductIndex || newIndex < 0 || newIndex >= products.length) return;
         
         isAnimating = true;
         
@@ -484,18 +491,28 @@ document.addEventListener('DOMContentLoaded', () => {
         // After animation completes
         setTimeout(() => {
             // Update the current index
-            if (newIndex >= products.length) {
-                currentProductIndex = 0;
-            } else if (newIndex < 0) {
-                currentProductIndex = products.length - 1;
-            } else {
-                currentProductIndex = newIndex;
-            }
+            currentProductIndex = newIndex;
             
             // Update the main image source and position
             currentImg.src = products[currentProductIndex].src;
             currentImg.style.transform = 'translateX(0)';
             productName.textContent = products[currentProductIndex].name;
+            
+            // Update navigation button states
+            const prevButton = document.querySelector('.prev');
+            const nextButton = document.querySelector('.next');
+            
+            // Disable previous button on first image
+            if (prevButton) {
+                prevButton.style.opacity = currentProductIndex === 0 ? '0.5' : '1';
+                prevButton.style.pointerEvents = currentProductIndex === 0 ? 'none' : 'auto';
+            }
+            
+            // Disable next button on last image
+            if (nextButton) {
+                nextButton.style.opacity = currentProductIndex === products.length - 1 ? '0.5' : '1';
+                nextButton.style.pointerEvents = currentProductIndex === products.length - 1 ? 'none' : 'auto';
+            }
             
             // Remove the temporary image
             imageContainer.removeChild(nextImg);
@@ -504,7 +521,7 @@ document.addEventListener('DOMContentLoaded', () => {
             preloadAdjacentImages(currentProductIndex);
             
             isAnimating = false;
-        }, animationDuration);
+        }, 300); // Match this with CSS transition duration
     }
 
     // Add click event to all product cards
