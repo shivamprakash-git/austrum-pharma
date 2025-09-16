@@ -389,4 +389,81 @@ function showNotification(message) {
     }, 3900);
 }
 
-// No-op
+// Product Gallery Modal
+document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('productGalleryModal');
+    const modalImg = document.getElementById('galleryImage');
+    const productName = document.getElementById('galleryProductName');
+    const closeBtn = document.querySelector('.close-gallery');
+    const prevBtn = document.querySelector('.prev');
+    const nextBtn = document.querySelector('.next');
+
+    const productCards = document.querySelectorAll('.product-card');
+    const products = [];
+    productCards.forEach(card => {
+        products.push({
+            src: card.querySelector('img').src,
+            name: card.querySelector('h3').textContent
+        });
+    });
+
+    let currentProductIndex;
+
+    function openModal(index) {
+        currentProductIndex = index;
+        modalImg.src = products[currentProductIndex].src;
+        productName.textContent = products[currentProductIndex].name;
+        modal.style.display = 'block';
+    }
+
+    function closeModal() {
+        modal.style.display = 'none';
+    }
+
+    function showProduct(index) {
+        if (index >= products.length) {
+            currentProductIndex = 0;
+        } else if (index < 0) {
+            currentProductIndex = products.length - 1;
+        } else {
+            currentProductIndex = index;
+        }
+        modalImg.src = products[currentProductIndex].src;
+        productName.textContent = products[currentProductIndex].name;
+    }
+
+    productCards.forEach((card, index) => {
+        card.addEventListener('click', () => {
+            openModal(index);
+        });
+    });
+
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+
+    prevBtn.addEventListener('click', () => {
+        showProduct(currentProductIndex - 1);
+    });
+
+    nextBtn.addEventListener('click', () => {
+        showProduct(currentProductIndex + 1);
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (modal.style.display === 'block') {
+            if (e.key === 'ArrowLeft') {
+                showProduct(currentProductIndex - 1);
+            }
+            if (e.key === 'ArrowRight') {
+                showProduct(currentProductIndex + 1);
+            }
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        }
+    });
+});

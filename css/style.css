@@ -1996,627 +1996,128 @@ footer::before {
     to { opacity: 0; }
 }
 
-/* Lightbox Styles */
-.logo-lightbox {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.9);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    cursor: pointer;
-}
-
-.logo-lightbox img {
-    max-width: 90%;
-    max-height: 90%;
-    object-fit: contain;
-    border-radius: 8px;
-}
-
-/* Product Card Enhancements */
-.product-card {
-    position: relative;
-    cursor: pointer;
-    overflow: hidden;
-    transition: var(--transition);
-}
-
-.product-card:hover {
-    transform: translateY(-10px);
-    box-shadow: var(--shadow-heavy);
-}
-
-.product-card:hover .product-overlay {
-    opacity: 1;
-    visibility: visible;
-}
-
-.product-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(27, 67, 50, 0.9);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    opacity: 0;
-    visibility: hidden;
-    transition: var(--transition);
-    color: var(--white);
-    font-weight: 600;
-}
-
-.product-overlay i {
-    font-size: 2rem;
-    margin-bottom: 10px;
-    animation: pulse 2s infinite;
-}
-
-.product-overlay span {
-    font-size: 1.1rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-/* Removed duplicate 'pulse' (scale) keyframes; using opacity-based pulse above */
-
-/* Modal Styles */
-.modal {
+/* Product Gallery Modal */
+.gallery-modal {
     display: none;
     position: fixed;
-    z-index: 10000;
+    z-index: 1001;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(5px);
-    opacity: 0;
-    transition: opacity 0.3s ease-out;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.8);
 }
 
-.modal.show {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
-    width: 100%;
-    height: 100%;
-}
-
-.modal-content {
-    background: var(--white);
-    width: 100%;
-    max-width: 900px;
-    max-height: 90vh;
-    overflow-y: auto;
+.gallery-content {
     position: relative;
-    animation: slideInUp 0.4s ease-out;
-    box-shadow: var(--shadow-heavy);
-    margin: 20px; /* Added margin for spacing from all sides */
+    margin: auto;
     padding: 0;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes slideInUp {
-    from {
-        opacity: 0;
-        transform: translateY(50px) scale(0.9);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-.modal-header {
-    background: var(--gradient-primary);
-    color: var(--white);
-    padding: 20px 30px;
-    border-radius: 0;
-    position: relative;
-    margin: 0;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-/* Mobile specific - make header completely square */
-@media (max-width: 480px) {
-    .modal-header {
-        border-radius: 0 !important;
-    }
-}
-
-.modal-header h2 {
-    margin: 0;
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 600;
-    font-size: 1.8rem;
-}
-
-.close {
-    position: absolute;
-    right: 20px;
+    width: 90%;
+    max-width: 700px;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 2rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: var(--transition);
-    width: 40px;
-    height: 40px;
     display: flex;
-    justify-content: center;
     align-items: center;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
+    justify-content: center;
 }
 
-.close:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateY(-50%) rotate(90deg);
-}
-
-.modal-body {
-    padding: 30px;
-}
-
-.modal-product-info {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 30px;
-    align-items: start;
-}
-
-.modal-image {
-    position: relative;
-}
-
-.modal-image img {
-    width: 100%;
-    height: 250px;
-    object-fit: cover;
-    border-radius: 10px;
-    box-shadow: var(--shadow-medium);
-}
-
-.modal-details {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.modal-category {
-    background: var(--accent);
-    color: var(--white);
-    padding: 5px 15px;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    align-self: flex-start;
-}
-
-.modal-details h3 {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 1.8rem;
-    color: var(--primary);
-    margin: 0;
-    font-weight: 700;
-}
-
-.modal-details > p {
-    font-size: 1.1rem;
-    line-height: 1.7;
-    color: var(--gray);
-    margin: 0;
-}
-
-.product-specifications,
-.product-indications,
-.product-dosage {
-    background: #f8f9fa;
-    padding: 20px;
-    border-radius: 10px;
-    border-left: 4px solid var(--accent);
-}
-
-.product-specifications h4,
-.product-indications h4,
-.product-dosage h4 {
-    font-family: 'Montserrat', sans-serif;
-    color: var(--primary);
-    margin: 0 0 15px 0;
-    font-size: 1.2rem;
-    font-weight: 600;
-}
-
-.product-specifications ul,
-.product-indications ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.product-specifications li,
-.product-indications li {
-    padding: 8px 0;
-    border-bottom: 1px solid #e9ecef;
-    position: relative;
-    padding-left: 25px;
-}
-
-.product-specifications li:last-child,
-.product-indications li:last-child {
-    border-bottom: none;
-}
-
-.product-specifications li::before,
-.product-indications li::before {
-    content: '✓';
-    position: absolute;
-    left: 0;
-    color: var(--accent);
-    font-weight: bold;
-}
-
-.dosage-info {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.dosage-item {
-    background: var(--white);
-    padding: 10px 15px;
-    border-radius: 25px;
-    border: 2px solid var(--accent);
-    color: var(--primary);
-    font-weight: 600;
-    font-size: 0.9rem;
-}
-
-.contact-cta {
-    background: var(--gradient-secondary);
-    padding: 25px;
-    border-radius: 10px;
+.gallery-content .image-container {
     text-align: center;
-    color: var(--white);
 }
 
-.contact-cta p {
-    margin: 0 0 15px 0;
-    font-size: 1.1rem;
-}
-
-.modal-contact-btn {
-    background: var(--white);
-    color: var(--primary);
-    padding: 12px 30px;
-    border-radius: 25px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: var(--transition);
-    display: inline-block;
-}
-
-.modal-contact-btn:hover {
-    background: var(--light);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-medium);
-}
-
-/* Responsive Modal Design */
-@media (max-width: 768px) {
-    .modal-content {
-        width: 95%;
-        margin: 10px;
-    }
-    
-    .modal-header {
-        padding: 15px 20px;
-    }
-    
-    .modal-header h2 {
-        font-size: 1.4rem;
-    }
-    
-    .modal-body {
-        padding: 20px;
-    }
-    
-    .modal-product-info {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-    
-    .modal-image img {
-        height: 200px;
-    }
-    
-    .modal-details h3 {
-        font-size: 1.5rem;
-    }
-    
-    .product-specifications,
-    .product-indications,
-    .product-dosage {
-        padding: 15px;
-    }
-    
-    .contact-cta {
-        padding: 20px;
-    }
-}
-
-@media (max-width: 480px) {
-    .modal {
-        padding: 0 10px;
-        align-items: flex-start;
-        padding-top: 40px; /* Increased top padding for more space */
-        box-sizing: border-box;
-    }
-    
-    .modal-content {
-        width: calc(100% - 40px); /* Increased horizontal spacing */
-        margin: 0 20px 20px 20px; /* Increased horizontal spacing */
-        max-height: 70vh; /* Reduced max-height for smaller vertical size */
-        border-radius: 0;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    }
-    
-    .modal-header {
-        padding: 8px 12px;
-        position: sticky;
-        top: 0;
-        z-index: 10;
-        border-radius: 0;
-    }
-    
-    .modal-header h2 {
-        font-size: 1rem;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 80%;
-    }
-    
-    .modal-body {
-        padding: 8px 10px;
-        overflow-y: auto;
-    }
-    
-    .modal-details {
-        gap: 8px;
-    }
-    
-    .modal-product-info {
-        gap: 10px;
-    }
-    
-    .modal-image img {
-        height: 120px;
-        object-fit: contain;
-    }
-    
-    .close {
-        right: 8px;
-        top: 8px;
-        transform: none;
-        background: rgba(0, 0, 0, 0.5);
-        color: white;
-        width: 26px;
-        height: 26px;
-        font-size: 1.1rem;
-    }
-    
-    .modal-details h3 {
-        font-size: 1.1rem;
-        margin-bottom: 3px;
-    }
-    
-    .modal-details > p {
-        font-size: 0.85rem;
-        line-height: 1.4;
-    }
-    
-    .product-specifications,
-    .product-indications,
-    .product-dosage {
-        padding: 8px 10px;
-        margin: 8px 0;
-    }
-    
-    .product-specifications h4,
-    .product-indications h4,
-    .product-dosage h4 {
-        font-size: 1rem;
-        margin-bottom: 6px;
-    }
-    
-    .product-specifications li,
-    .product-indications li {
-        padding: 6px 0 6px 20px;
-        font-size: 0.9rem;
-    }
-    
-    .contact-cta {
-        padding: 15px;
-        margin-top: 15px;
-    }
-    
-    .contact-cta p {
-        font-size: 1rem;
-        margin-bottom: 10px;
-    }
-    
-    .modal-contact-btn {
-        padding: 10px 20px;
-        font-size: 0.9rem;
-    }
-    
-    /* Fix product grid overlap in mobile desktop mode */
-    .products-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
-        margin-top: 30px;
-    }
-    
-    .product-card {
-        margin-bottom: 20px;
-    }
-    
-    /* Ensure sections don't overlap */
-    .section {
-        padding: 60px 0;
-        margin-bottom: 20px;
-    }
-    
-    .contact {
-        padding: 60px 0;
-        margin-top: 20px;
-    }
-    
-    /* Fix footer spacing */
-    footer {
-        margin-top: 40px;
-        padding: 40px 0;
-    }
-}
-
-/* Fix for desktop view on mobile portrait mode - text overlapping with icons */
-@media screen and (max-width: 1024px) and (orientation: portrait) {
-    .contact-item {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 20px 15px;
-        margin-bottom: 25px;
-    }
-    
-    .contact-icon {
-        margin-right: 0;
-        margin-bottom: 15px;
-        align-self: center;
-    }
-    
-    .contact-text {
-        text-align: center;
-        width: 100%;
-    }
-    
-    .contact-text h4 {
-        font-size: 1.1rem;
-        margin-bottom: 8px;
-    }
-    
-    .contact-text p {
-        font-size: 0.95rem;
-        line-height: 1.5;
-        word-wrap: break-word;
-    }
-}
-
-/* Additional fix for very narrow portrait screens */
-@media screen and (max-width: 768px) and (orientation: portrait) {
-    .contact-info h3 {
-        text-align: center;
-        width: 100%;
-    }
-    
-    .contact-container {
-        gap: 20px;
-        flex-direction: column;
-        align-items: center;
-    }
-    
-    .contact-info, 
-    .contact-form {
-        width: 100%;
-        max-width: 500px;
-        padding: 25px 20px;
-        margin: 0 auto;
-        box-sizing: border-box;
-    }
-    
-    .contact-form h3 {
-        text-align: center;
-        margin-bottom: 25px;
-    }
-    
-    .contact-item {
-        padding: 15px 10px;
-        margin: 0 auto 20px;
-        width: 100%;
-        max-width: 100%;
-        box-sizing: border-box;
-    }
-    
-    .contact-icon {
-        width: 45px;
-        height: 45px;
-        font-size: 1.1rem;
-        margin: 0 auto 10px;
-        display: flex;
-    }
-    
-    .form-group {
-        margin: 0 auto 20px;
-        width: 100%;
-        max-width: 100%;
-    }
-    
-    .form-group label {
-        text-align: left;
-        display: block;
-        width: 100%;
-    }
-    
-    .form-group input,
-    .form-group textarea {
-        padding: 12px 15px;
-        font-size: 0.95rem;
-        width: 100%;
-        box-sizing: border-box;
-    }
-    
-    #contactForm {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-    
-    #contactForm button[type="submit"] {
-        margin: 10px auto 0;
-        display: block;
-        width: auto;
-        padding: 12px 30px;
-    }
-}
-
-.logo-lightbox img {
-    max-width: 90%;
-    max-height: 90%;
+#galleryImage {
+    max-width: 100%;
+    max-height: 80vh;
     object-fit: contain;
-    border-radius: 8px;
 }
 
-/* Removed legacy duplicate top-banner overrides and forced borders */
+#galleryProductName {
+    color: white;
+    text-align: center;
+    padding-top: 15px;
+}
+
+.close-gallery {
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    color: #f1f1f1;
+    font-size: 40px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.close-gallery:hover,
+.close-gallery:focus {
+    color: #bbb;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.prev, .next {
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    width: auto;
+    padding: 16px;
+    margin-top: -50px;
+    color: var(--primary);
+    font-weight: bold;
+    font-size: 20px;
+    transition: 0.6s ease;
+    border-radius: 0 3px 3px 0;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.next {
+    right: 0;
+    border-radius: 3px 0 0 3px;
+}
+
+.prev {
+    left: 0;
+}
+
+.prev:hover, .next:hover {
+    background-color: rgba(0,0,0,0.8);
+    color: white;
+}
+
+@media (max-width: 1024px) {
+    .close-gallery {
+        top: 10px;
+        right: 20px;
+        font-size: 30px;
+    }
+}
+
+@media (max-width: 768px) {
+    .prev, .next {
+        top: auto;
+        bottom: 20px;
+        transform: none;
+        margin-top: 0;
+        padding: 10px;
+        font-size: 18px;
+        background-color: rgba(0,0,0,0.5);
+        color: white;
+    }
+
+    .prev {
+        left: 20px;
+    }
+
+    .next {
+        right: 20px;
+    }
+
+    #galleryImage {
+        max-height: 70vh;
+    }
+
+    #galleryProductName {
+        padding-bottom: 60px;
+    }
+}

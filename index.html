@@ -421,45 +421,16 @@
         <i class="fas fa-arrow-up"></i>
     </div>
 
-    <!-- Product Modal -->
-    <div id="productModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span class="close">&times;</span>
-                <h2 id="modalTitle">Product Details</h2>
+    <!-- Product Gallery Modal -->
+    <div id="productGalleryModal" class="gallery-modal">
+        <span class="close-gallery">&times;</span>
+        <div class="gallery-content">
+            <a class="prev">&#10094;</a>
+            <div class="image-container">
+                <img id="galleryImage" src="" alt="Product Image">
+                <h3 id="galleryProductName"></h3>
             </div>
-            <div class="modal-body">
-                <div class="modal-product-info">
-                    <div class="modal-image">
-                        <img id="modalImage" src="" alt="Product Image">
-                    </div>
-                    <div class="modal-details">
-                        <span id="modalCategory" class="modal-category"></span>
-                        <h3 id="modalProductName"></h3>
-                        <p id="modalDescription"></p>
-                        
-                        <div class="product-specifications">
-                            <h4>Key Features</h4>
-                            <ul id="modalFeatures"></ul>
-                        </div>
-                        
-                        <div class="product-indications">
-                            <h4>Indications</h4>
-                            <ul id="modalIndications"></ul>
-                        </div>
-                        
-                        <div class="product-dosage">
-                            <h4>Available Forms</h4>
-                            <div id="modalDosage" class="dosage-info"></div>
-                        </div>
-                        
-                        <div class="contact-cta">
-                            <p>For detailed product information and availability:</p>
-                            <a href="#contact" class="cta-button modal-contact-btn">Contact Us</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <a class="next">&#10095;</a>
         </div>
     </div>
 
