@@ -2301,33 +2301,30 @@ footer::before {
 }
 
 @media (max-width: 768px) {
-    .prev, .next {
-        display: none; /* Hide navigation buttons on mobile */
-    }
-
-    .prev {
-        left: 20px;
-    }
-
+    .gallery-content .prev,
+    .gallery-content .next,
+    .prev,
     .next {
-        right: 20px;
-    }
-
-    #galleryImage {
-        max-height: 70vh;
-        width: 100%;
-        height: auto;
-        object-fit: contain;
+        display: none !important; /* Force hide all navigation buttons on mobile */
     }
 
     .image-container {
         width: 100%;
+        max-width: 100% !important;
         padding: 0 10px;
+        margin: 0;
         box-sizing: border-box;
     }
 
+    #galleryImage {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: auto;
+        max-height: 70vh;
+        object-fit: contain;
+    }
+
     #galleryProductName {
-        padding-bottom: 60px;
         padding: 0 15px 60px;
         width: 100%;
         box-sizing: border-box;
