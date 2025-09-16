@@ -388,8 +388,6 @@ function showNotification(message) {
         }
     }, 3900);
 }
-
-// Product Gallery Modal
 document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('productGalleryModal');
     const modalImg = document.getElementById('galleryImage');
@@ -397,10 +395,40 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeBtn = document.querySelector('.close-gallery');
     const prevBtn = document.querySelector('.prev');
     const nextBtn = document.querySelector('.next');
-    const imageContainer = document.querySelector('.image-container');
-
     const productCards = document.querySelectorAll('.product-card');
     const products = [];
+    let currentIndex = 0;
+    let touchStartX = 0;
+    let touchEndX = 0;
+    let isZoomed = false; // Track zoom state
+    
+    // Prevent touch events when zoomed
+    const preventTouch = (e) => {
+        if (isZoomed) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        }
+    };
+    
+    // Add touch event listeners to the image
+    const addTouchListeners = () => {
+        if (modalImg) {
+            modalImg.addEventListener('touchmove', preventTouch, { passive: false });
+            modalImg.addEventListener('touchend', preventTouch, { passive: false });
+            modalImg.addEventListener('touchcancel', preventTouch, { passive: false });
+        }
+    };
+    
+    // Remove touch event listeners
+    const removeTouchListeners = () => {
+        if (modalImg) {
+            modalImg.removeEventListener('touchmove', preventTouch);
+            modalImg.removeEventListener('touchend', preventTouch);
+            modalImg.removeEventListener('touchcancel', preventTouch);
+        }
+    };
+
     productCards.forEach(card => {
         products.push({
             src: card.querySelector('img').src,
@@ -417,18 +445,56 @@ document.addEventListener('DOMContentLoaded', () => {
         modalImg.src = products[currentProductIndex].src;
         productName.textContent = products[currentProductIndex].name;
         modal.style.display = 'block';
-        
-        // Preload next and previous images for smoother transitions
+        document.body.style.overflow = 'hidden'; // Prevent scrolling when modal is open
         preloadAdjacentImages(index);
+        isZoomed = false;
+        addTouchListeners(); // Add touch listeners when modal opens
         
-        // Prevent body scroll when modal is open
-        document.body.style.overflow = 'hidden';
+        // Detect zoom level changes on mobile
+        if (modalImg) {
+            let initialScale = 1;
+            modalImg.addEventListener('touchstart', function(e) {
+                if (e.touches.length === 2) {
+                    // Get initial distance between two fingers
+                    initialScale = modalImg.getBoundingClientRect().width / modalImg.offsetWidth;
+                }
+            }, { passive: true });
+            
+            modalImg.addEventListener('touchmove', function(e) {
+                if (e.touches.length === 2) {
+                    // Calculate current scale
+                    const touch1 = e.touches[0];
+                    const touch2 = e.touches[1];
+                    const currentDistance = Math.hypot(
+                        touch2.pageX - touch1.pageX,
+                        touch2.pageY - touch1.pageY
+                    );
+                    const initialDistance = Math.hypot(
+                        touch2.pageX - touch1.pageX,
+                        touch2.pageY - touch1.pageY
+                    );
+                    const scale = (currentDistance / initialDistance) * initialScale;
+                    
+                    // Update zoom state
+                    isZoomed = scale > 1.1;
+                }
+            }, { passive: true });
+            
+            // Reset zoom state on touch end
+            modalImg.addEventListener('touchend', function() {
+                setTimeout(() => {
+                    const currentScale = modalImg.getBoundingClientRect().width / modalImg.offsetWidth;
+                    isZoomed = currentScale > 1.1;
+                }, 100);
+            }, { passive: true });
+        }
     }
 
     function closeModal() {
         modal.style.display = 'none';
-        // Re-enable body scroll
-        document.body.style.overflow = '';
+        document.body.style.overflow = ''; // Re-enable scrolling
+        isZoomed = false;
+        removeTouchListeners(); // Clean up touch listeners
     }
 
     function preloadAdjacentImages(index) {
@@ -477,7 +543,7 @@ document.addEventListener('DOMContentLoaded', () => {
         nextImg.style.willChange = 'transform';
         
         // Add the new image to the container
-        imageContainer.appendChild(nextImg);
+        modal.appendChild(nextImg);
         
         // Position the current image for the slide
         currentImg.style.transform = `translateX(${direction * -100}%)`;
@@ -515,7 +581,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             // Remove the temporary image
-            imageContainer.removeChild(nextImg);
+            modal.removeChild(nextImg);
             
             // Preload adjacent images for smoother transitions
             preloadAdjacentImages(currentProductIndex);
@@ -583,21 +649,35 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     // Touch event handling for swiping
-    let touchStartX = 0;
-    let touchEndX = 0;
     const swipeThreshold = 50; // Minimum distance to trigger a swipe
     
     // Add touch events to the image container
     const galleryContent = document.querySelector('.gallery-content');
     
-    galleryContent.addEventListener('touchstart', (e) => {
-        touchStartX = e.changedTouches[0].screenX;
-    }, { passive: true });
+    // Handle touch events for mobile swipe
+    modal.addEventListener('touchstart', (e) => {
+        if (!isZoomed) { // Only handle swipe if not zoomed
+            touchStartX = e.changedTouches[0].screenX;
+        } else {
+            e.preventDefault();
+        }
+    }, { passive: false });
+
+    modal.addEventListener('touchend', (e) => {
+        if (!isZoomed) { // Only handle swipe if not zoomed
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        } else {
+            e.preventDefault();
+        }
+    }, { passive: false });
     
-    galleryContent.addEventListener('touchend', (e) => {
-        touchEndX = e.changedTouches[0].screenX;
-        handleSwipe();
-    }, { passive: true });
+    // Prevent default touch behavior when zoomed
+    modal.addEventListener('touchmove', (e) => {
+        if (isZoomed) {
+            e.preventDefault();
+        }
+    }, { passive: false });
     
     function handleSwipe() {
         const swipeDistance = touchEndX - touchStartX;
