@@ -401,33 +401,107 @@ document.addEventListener('DOMContentLoaded', () => {
     let touchStartX = 0;
     let touchEndX = 0;
     let isZoomed = false; // Track zoom state
-    
+    let initialDistance = 0;
+    let currentScale = 1;
+    const ZOOM_THRESHOLD = 1.1; // 10% zoom threshold
+
     // Prevent touch events when zoomed
-    const preventTouch = (e) => {
-        if (isZoomed) {
+    function preventTouch(e) {
+        // Always prevent default for two-finger touch to avoid page zooming
+        if (e.touches && e.touches.length > 1) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Calculate the distance between the two fingers
+            const touch1 = e.touches[0];
+            const touch2 = e.touches[1];
+            const distance = Math.hypot(
+                touch2.pageX - touch1.pageX,
+                touch2.pageY - touch1.pageY
+            );
+            
+            if (initialDistance === 0) {
+                initialDistance = distance;
+            } else {
+                // Check if zooming in/out
+                const scale = distance / initialDistance;
+                currentScale = scale;
+                
+                // If zoomed in beyond threshold, prevent default touch behavior
+                if (scale > ZOOM_THRESHOLD) {
+                    isZoomed = true;
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                } else if (scale < 1) {
+                    // If zoomed back to normal or less
+                    isZoomed = false;
+                }
+            }
+        } else if (isZoomed) {
+            // If already zoomed, prevent single touch events from scrolling
             e.preventDefault();
             e.stopPropagation();
             return false;
         }
-    };
-    
+        
+        return true;
+    }
+
     // Add touch event listeners to the image
-    const addTouchListeners = () => {
-        if (modalImg) {
-            modalImg.addEventListener('touchmove', preventTouch, { passive: false });
-            modalImg.addEventListener('touchend', preventTouch, { passive: false });
-            modalImg.addEventListener('touchcancel', preventTouch, { passive: false });
-        }
-    };
-    
+    function addTouchListeners() {
+        modalImg.addEventListener('touchstart', preventTouch, { passive: false });
+        modalImg.addEventListener('touchmove', preventTouch, { passive: false });
+        modalImg.addEventListener('touchend', (e) => {
+            // Reset zoom tracking when touch ends
+            initialDistance = 0;
+            preventTouch(e);
+        }, { passive: false });
+        modalImg.addEventListener('touchcancel', (e) => {
+            // Reset zoom tracking when touch is cancelled
+            initialDistance = 0;
+            isZoomed = false;
+            preventTouch(e);
+        }, { passive: false });
+        
+        // Disable double-tap zoom on the image
+        modalImg.addEventListener('gesturestart', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        });
+        
+        // Handle double tap for zoom in/out
+        let lastTap = 0;
+        modalImg.addEventListener('touchend', function(e) {
+            const currentTime = new Date().getTime();
+            const tapLength = currentTime - lastTap;
+            if (tapLength < 300 && tapLength > 0) {
+                // Double tap detected
+                e.preventDefault();
+                e.stopPropagation();
+                
+                if (currentScale > 1) {
+                    // If zoomed in, zoom out
+                    modalImg.style.transform = '';
+                    currentScale = 1;
+                    isZoomed = false;
+                } else {
+                    // If not zoomed, zoom in
+                    modalImg.style.transform = 'scale(2)';
+                    currentScale = 2;
+                    isZoomed = true;
+                }
+            }
+            lastTap = currentTime;
+        }, { passive: false });
+    }
+
     // Remove touch event listeners
-    const removeTouchListeners = () => {
-        if (modalImg) {
-            modalImg.removeEventListener('touchmove', preventTouch);
-            modalImg.removeEventListener('touchend', preventTouch);
-            modalImg.removeEventListener('touchcancel', preventTouch);
-        }
-    };
+    function removeTouchListeners() {
+        modalImg.removeEventListener('touchmove', preventTouch);
+        modalImg.removeEventListener('touchend', preventTouch);
+        modalImg.removeEventListener('touchcancel', preventTouch);
+    }
 
     productCards.forEach(card => {
         products.push({
