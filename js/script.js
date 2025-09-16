@@ -397,6 +397,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeBtn = document.querySelector('.close-gallery');
     const prevBtn = document.querySelector('.prev');
     const nextBtn = document.querySelector('.next');
+    const imageContainer = document.querySelector('.image-container');
 
     const productCards = document.querySelectorAll('.product-card');
     const products = [];
@@ -408,62 +409,191 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     let currentProductIndex;
+    let isAnimating = false;
+    const animationDuration = 300; // ms
 
     function openModal(index) {
         currentProductIndex = index;
         modalImg.src = products[currentProductIndex].src;
         productName.textContent = products[currentProductIndex].name;
         modal.style.display = 'block';
+        
+        // Preload next and previous images for smoother transitions
+        preloadAdjacentImages(index);
+        
+        // Prevent body scroll when modal is open
+        document.body.style.overflow = 'hidden';
     }
 
     function closeModal() {
         modal.style.display = 'none';
+        // Re-enable body scroll
+        document.body.style.overflow = '';
     }
 
-    function showProduct(index) {
-        if (index >= products.length) {
-            currentProductIndex = 0;
-        } else if (index < 0) {
-            currentProductIndex = products.length - 1;
-        } else {
-            currentProductIndex = index;
+    function preloadAdjacentImages(index) {
+        // Preload next image
+        if (index < products.length - 1) {
+            const nextImg = new Image();
+            nextImg.src = products[index + 1].src;
         }
-        modalImg.src = products[currentProductIndex].src;
-        productName.textContent = products[currentProductIndex].name;
+        // Preload previous image
+        if (index > 0) {
+            const prevImg = new Image();
+            prevImg.src = products[index - 1].src;
+        }
     }
 
+    function showProduct(newIndex) {
+        if (isAnimating) return;
+        
+        // Don't do anything if we're already on this image
+        if (newIndex === currentProductIndex) return;
+        
+        isAnimating = true;
+        
+        // Determine direction of slide (1 for right, -1 for left)
+        const direction = newIndex > currentProductIndex ? 1 : -1;
+        
+        // Create a clone of the current image for the slide effect
+        const currentImg = modalImg;
+        const nextImg = document.createElement('img');
+        nextImg.src = products[newIndex].src;
+        nextImg.style.position = 'absolute';
+        nextImg.style.top = '0';
+        nextImg.style.left = direction > 0 ? '100%' : '-100%';
+        nextImg.style.width = '100%';
+        nextImg.style.height = 'auto';
+        nextImg.style.maxHeight = '80vh';
+        nextImg.style.objectFit = 'contain';
+        nextImg.style.transition = 'transform 0.3s ease';
+        nextImg.style.willChange = 'transform';
+        
+        // Add the new image to the container
+        imageContainer.appendChild(nextImg);
+        
+        // Position the current image for the slide
+        currentImg.style.transform = `translateX(${direction * -100}%)`;
+        
+        // Slide in the new image
+        requestAnimationFrame(() => {
+            nextImg.style.transform = 'translateX(0)';
+            currentImg.style.transform = `translateX(${direction * 100}%)`;
+        });
+        
+        // After animation completes
+        setTimeout(() => {
+            // Update the current index
+            if (newIndex >= products.length) {
+                currentProductIndex = 0;
+            } else if (newIndex < 0) {
+                currentProductIndex = products.length - 1;
+            } else {
+                currentProductIndex = newIndex;
+            }
+            
+            // Update the main image source and position
+            currentImg.src = products[currentProductIndex].src;
+            currentImg.style.transform = 'translateX(0)';
+            productName.textContent = products[currentProductIndex].name;
+            
+            // Remove the temporary image
+            imageContainer.removeChild(nextImg);
+            
+            // Preload adjacent images for smoother transitions
+            preloadAdjacentImages(currentProductIndex);
+            
+            isAnimating = false;
+        }, animationDuration);
+    }
+
+    // Add click event to all product cards
     productCards.forEach((card, index) => {
-        card.addEventListener('click', () => {
+        card.addEventListener('click', (e) => {
+            // Don't trigger if clicking on a link inside the card
+            if (e.target.tagName === 'A') return;
             openModal(index);
         });
     });
 
     closeBtn.addEventListener('click', closeModal);
+    
+    // Close modal when clicking outside the image
     modal.addEventListener('click', (e) => {
         if (e.target === modal) {
             closeModal();
         }
     });
 
-    prevBtn.addEventListener('click', () => {
+    // Navigation buttons
+    prevBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
         showProduct(currentProductIndex - 1);
     });
 
-    nextBtn.addEventListener('click', () => {
+    nextBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
         showProduct(currentProductIndex + 1);
     });
 
+    // Keyboard navigation
     document.addEventListener('keydown', (e) => {
         if (modal.style.display === 'block') {
-            if (e.key === 'ArrowLeft') {
-                showProduct(currentProductIndex - 1);
-            }
-            if (e.key === 'ArrowRight') {
-                showProduct(currentProductIndex + 1);
-            }
-            if (e.key === 'Escape') {
-                closeModal();
+            e.preventDefault();
+            
+            switch(e.key) {
+                case 'ArrowLeft':
+                    showProduct(currentProductIndex - 1);
+                    break;
+                case 'ArrowRight':
+                    showProduct(currentProductIndex + 1);
+                    break;
+                case 'Escape':
+                    closeModal();
+                    break;
             }
         }
     });
+    
+    // Handle window resize to ensure proper image sizing
+    window.addEventListener('resize', () => {
+        if (modal.style.display === 'block') {
+            // Force a reflow to ensure the image is properly sized
+            modalImg.style.display = 'none';
+            void modalImg.offsetHeight; // Trigger reflow
+            modalImg.style.display = '';
+        }
+    });
+    
+    // Touch event handling for swiping
+    let touchStartX = 0;
+    let touchEndX = 0;
+    const swipeThreshold = 50; // Minimum distance to trigger a swipe
+    
+    // Add touch events to the image container
+    const galleryContent = document.querySelector('.gallery-content');
+    
+    galleryContent.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+    
+    galleryContent.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+    }, { passive: true });
+    
+    function handleSwipe() {
+        const swipeDistance = touchEndX - touchStartX;
+        
+        // Check if the swipe distance is significant enough
+        if (Math.abs(swipeDistance) > swipeThreshold) {
+            if (swipeDistance > 0) {
+                // Swipe right - go to previous image
+                showProduct(currentProductIndex - 1);
+            } else {
+                // Swipe left - go to next image
+                showProduct(currentProductIndex + 1);
+            }
+        }
+    }
 });

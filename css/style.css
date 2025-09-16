@@ -2005,37 +2005,52 @@ footer::before {
     top: 0;
     width: 100%;
     height: 100%;
-    overflow: auto;
-    background-color: rgba(0,0,0,0.8);
+    background-color: rgba(0, 0, 0, 0.9);
+    overflow: hidden;
 }
 
 .gallery-content {
     position: relative;
-    margin: auto;
-    padding: 0;
-    width: 90%;
-    max-width: 700px;
-    top: 50%;
-    transform: translateY(-50%);
+    width: 100%;
+    height: 100%;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
-.gallery-content .image-container {
-    text-align: center;
+.image-container {
+    flex: 1;
+    max-width: 80%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    margin: 0 auto;
+    position: relative;
 }
 
 #galleryImage {
     max-width: 100%;
     max-height: 80vh;
     object-fit: contain;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    will-change: transform, opacity;
+    position: relative;
+    z-index: 1;
+    width: auto;
+    height: auto;
 }
 
 #galleryProductName {
     color: white;
     text-align: center;
-    padding-top: 15px;
+    margin-top: 15px;
+    font-size: 1.5rem;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
 }
 
 .close-gallery {
@@ -2045,7 +2060,10 @@ footer::before {
     color: #f1f1f1;
     font-size: 40px;
     font-weight: bold;
+    cursor: pointer;
+    z-index: 1001;
     transition: 0.3s;
+    text-decoration: none;
 }
 
 .close-gallery:hover,
@@ -2059,16 +2077,21 @@ footer::before {
     cursor: pointer;
     position: absolute;
     top: 50%;
-    width: auto;
-    padding: 16px;
-    margin-top: -50px;
-    color: var(--primary);
+    width: 50px;
+    height: 80px;
+    padding: 0;
+    margin-top: -40px;
+    color: white;
     font-weight: bold;
-    font-size: 20px;
-    transition: 0.6s ease;
-    border-radius: 0 3px 3px 0;
+    font-size: 28px;
+    transition: 0.3s ease;
+    border: none;
     user-select: none;
-    -webkit-user-select: none;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .next {
@@ -2078,12 +2101,69 @@ footer::before {
 
 .prev {
     left: 0;
+    border-radius: 0 3px 3px 0;
 }
 
 .prev:hover, .next:hover {
-    background-color: rgba(0,0,0,0.8);
-    color: white;
+    background-color: rgba(0, 0, 0, 0.8);
 }
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+    .gallery-content {
+        padding: 10px;
+    }
+    
+    .image-container {
+        max-width: 90%;
+    }
+    
+    #galleryImage {
+        max-height: 70vh;
+    }
+    
+    .prev, .next {
+        width: 40px;
+        height: 60px;
+        font-size: 24px;
+        margin-top: -30px;
+    }
+    
+    #galleryProductName {
+        font-size: 1.2rem;
+        margin-top: 10px;
+    }
+}
+
+/* For very small screens */
+@media screen and (max-width: 480px) {
+    .image-container {
+        max-width: 95%;
+    }
+    
+    #galleryImage {
+        max-height: 60vh;
+    }
+    
+    .prev, .next {
+        width: 30px;
+        height: 50px;
+        font-size: 20px;
+        margin-top: -25px;
+    }
+    
+    #galleryProductName {
+        font-size: 1rem;
+    }
+    
+    .close-gallery {
+        right: 15px;
+        font-size: 30px;
+    }
+}
+    /* Cleaned up duplicate rules */
+
+/* Remove duplicate .prev, .next rules - they're already defined above */
 
 @media (max-width: 1024px) {
     .close-gallery {
