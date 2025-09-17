@@ -562,6 +562,10 @@ document.addEventListener('DOMContentLoaded', () => {
         isZoomed = false;
     }
 
+    // Track last tap time for double-tap detection
+    let lastTapTime = 0;
+    const DOUBLE_TAP_DELAY = 300; // ms
+
     // Handle touch events for zooming and panning
     function handleTouch(e) {
         // Only prevent default for multi-touch or when zoomed
@@ -743,15 +747,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         
         // Handle double tap for zoom in/out
-        let lastTap = 0;
         modalImg.addEventListener('touchend', function(e) {
             // Only handle single tap for double tap detection
             if (e.touches && e.touches.length > 0) return;
             
             const currentTime = new Date().getTime();
-            const tapLength = currentTime - lastTap;
+            const tapLength = currentTime - lastTapTime;
             
-            if (tapLength < 300 && tapLength > 0) {
+            if (tapLength < DOUBLE_TAP_DELAY && tapLength > 0) {
                 // Double tap detected
                 e.preventDefault();
                 e.stopPropagation();
@@ -760,25 +763,54 @@ document.addEventListener('DOMContentLoaded', () => {
                     // If zoomed in, zoom out
                     resetImageTransform();
                 } else {
-                    // If not zoomed, zoom in
+                    // If not zoomed, zoom in to the point of touch
+                    const touch = e.changedTouches[0];
+                    const rect = modalImg.getBoundingClientRect();
+                    const offsetX = touch.clientX - rect.left;
+                    const offsetY = touch.clientY - rect.top;
+                    
+                    currentScale = 2;
+                    isZoomed = true;
+                    
+                    // Center the zoom on the touch point
+                    translateX = (rect.width / 2 - offsetX) * (currentScale - 1);
+                    translateY = (rect.height / 2 - offsetY) * (currentScale - 1);
+                    
+                    updateImageTransform();
+                }
+                // Reset the timer to prevent accidental triple-tap
+                lastTapTime = 0;
+            } else {
+                // Single tap - just update the timer
+                lastTapTime = currentTime;
+            }
+        });
+
+        // Enhanced double-click to toggle zoom in/out
+        // Track last click time for better double-click detection
+        let lastClickTime = 0;
+        const DOUBLE_CLICK_DELAY = 300; // ms
+
+        modalImg.addEventListener('click', function(e) {
+            const currentTime = new Date().getTime();
+            
+            // Check if this click is part of a double-click
+            if (currentTime - lastClickTime < DOUBLE_CLICK_DELAY) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                if (isZoomed) {
+                    resetImageTransform();
+                } else {
                     currentScale = 2;
                     isZoomed = true;
                     updateImageTransform();
                 }
-            }
-            lastTap = currentTime;
-        });
-
-        // Desktop: double-click to toggle zoom in/out
-        modalImg.addEventListener('dblclick', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            if (isZoomed) {
-                resetImageTransform();
+                // Reset the timer to prevent accidental triple-click
+                lastClickTime = 0;
             } else {
-                currentScale = 2;
-                isZoomed = true;
-                updateImageTransform();
+                // Single click - just update the timer
+                lastClickTime = currentTime;
             }
         });
         
