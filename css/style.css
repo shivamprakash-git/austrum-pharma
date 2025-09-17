@@ -18,13 +18,14 @@
     --top-banner-height: 35px;
 }
 
-/* Desktop and large screens: restore larger image sizing */
+/* Desktop and large screens: larger image sizing */
 @media screen and (min-width: 1025px) {
     .modal-content-container {
-        width: 90%;
-        max-width: 1200px;
-        height: 90%;
-        max-height: 90vh;
+        width: 98%;
+        max-width: 1600px;
+        height: 96%;
+        max-height: 96vh;
+        margin: 2vh auto;
     }
     .product-details-card {
         width: 350px; /* fixed sidebar width for more image space */
@@ -2140,14 +2141,14 @@ footer::before {
 
 .modal-content-container {
     display: flex;
-    width: 90%;
-    max-width: 1200px;
-    height: 90%;
-    max-height: 90vh;
+    width: 95%;
+    max-width: 1400px;
+    height: 95%;
+    max-height: 95vh;
     background: white;
     border-radius: 10px;
     overflow: hidden;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.4);
     position: relative;
 }
 
@@ -2156,26 +2157,33 @@ footer::before {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 30px;
-    background: #f9f9f9;
-    min-height: 0; /* allow to shrink on short-height screens */
+    padding: 20px;
+    background: #f5f5f5;
+    min-height: 0;
     max-height: 100%;
     overflow: hidden;
-    position: relative; /* allow animated overlays */
-    perspective: 1000px; /* add depth for 3D tilt */
-    touch-action: pan-y; /* allow vertical pan, we'll handle horizontal swipe */
-    min-width: 0; /* critical for flex children to shrink instead of overflowing */
+    position: relative;
+    perspective: 1000px;
+    touch-action: pan-y;
+    min-width: 0;
+    box-sizing: border-box;
 }
 
 #galleryImage {
-    width: 100%;
-    height: 100%;
+    width: auto;
+    height: auto;
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
     margin: 0 auto;
     display: block;
-    touch-action: pan-y; /* improves swipe reliability */
+    touch-action: pan-y;
+    transition: transform 0.2s ease-out;
+    cursor: zoom-in;
+}
+
+#galleryImage.zoomed {
+    cursor: zoom-out;
 }
 
 /* Cool slide/fade/blur animations for gallery transitions */
@@ -2511,9 +2519,16 @@ footer::before {
 /* Modal responsive styles */
 @media screen and (max-width: 768px) {
     /* Make gallery image comfortable on tablets */
+    .modal-content-container {
+        width: 98%;
+        height: 96%;
+        max-height: 96vh;
+        margin: 2vh auto;
+    }
+    
     #galleryImage {
-        max-width: calc(100vw - 80px);
-        /* leave room for close button + bottom nav buttons */
+        max-width: 100%;
+        max-height: 90vh;
         max-height: min(50vh, calc(100vh - 220px));
     }
     .gallery-content {
