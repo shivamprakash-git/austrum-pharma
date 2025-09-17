@@ -390,7 +390,7 @@ function showNotification(message) {
 }
 document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('productGalleryModal');
-    const modalImg = document.getElementById('galleryImage');
+    let modalImg = document.getElementById('galleryImage');
     const productName = document.getElementById('galleryProductName');
     const closeBtn = document.querySelector('.close-gallery');
     const prevBtn = document.querySelector('.prev');
@@ -471,8 +471,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const maxX = (currentScale - 1) * modalImg.width / 2;
                 const maxY = (currentScale - 1) * modalImg.height / 2;
                 
-                translateX = touch.clientX - startX;
-                translateY = touch.clientY - startY;
+                // Increase sensitivity by multiplying the movement
+                const sensitivity = 2.5; // Increased from 1.5 to 2.5 for better sensitivity
+                translateX = (touch.clientX - startX) * sensitivity;
+                translateY = (touch.clientY - startY) * sensitivity;
                 
                 // Apply boundaries
                 translateX = Math.min(Math.max(translateX, -maxX), maxX);
@@ -537,14 +539,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Remove touch event listeners
     function removeTouchListeners() {
-        modalImg.removeEventListener('touchstart', handleTouch);
-        modalImg.removeEventListener('touchmove', handleTouch);
-        modalImg.removeEventListener('touchend', handleTouch);
-        modalImg.removeEventListener('touchcancel', handleTouch);
-        modalImg.removeEventListener('gesturestart', function() {});
+        // Create a clone of the event listeners to remove them safely
+        const clone = modalImg.cloneNode(true);
+        modalImg.parentNode.replaceChild(clone, modalImg);
+        modalImg = clone; // Update the reference
         
         // Reset zoom and pan state
         resetImageTransform();
+        
+        // Re-add the image source to ensure it's properly displayed
+        if (products[currentIndex]) {
+            modalImg.src = products[currentIndex].src;
+        }
     }
 
     productCards.forEach(card => {
@@ -609,10 +615,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function closeModal() {
+        // Reset zoom state before closing
+        resetImageTransform();
+        
+        // Close the modal
         modal.style.display = 'none';
-        document.body.style.overflow = ''; // Re-enable scrolling
-        isZoomed = false;
-        removeTouchListeners(); // Clean up touch listeners
+        document.body.style.overflow = 'auto'; // Re-enable scrolling
+        
+        // Remove and reattach event listeners for the next open
+        removeTouchListeners();
+        
+        // Re-initialize the modal image
+        if (products[currentProductIndex]) {
+            modalImg.src = products[currentProductIndex].src;
+            modalImg.style.transform = '';
+        }
     }
 
     function preloadAdjacentImages(index) {
