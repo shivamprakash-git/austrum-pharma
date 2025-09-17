@@ -768,6 +768,19 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             lastTap = currentTime;
         });
+
+        // Desktop: double-click to toggle zoom in/out
+        modalImg.addEventListener('dblclick', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (isZoomed) {
+                resetImageTransform();
+            } else {
+                currentScale = 2;
+                isZoomed = true;
+                updateImageTransform();
+            }
+        });
         
         // Add click handler to modal overlay to close when clicking outside image
         modal.addEventListener('click', function(e) {
@@ -776,36 +789,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Swipe handlers (only when not zoomed) – re-bound each open
-        modalImg.addEventListener('touchstart', (e) => {
-            if (!isZoomed) {
-                touchStartX = e.changedTouches[0].screenX;
-                touchStartY = e.changedTouches[0].screenY;
-            } else {
-                e.preventDefault();
-            }
-        }, { passive: false });
-
-        modalImg.addEventListener('touchend', (e) => {
-            if (!isZoomed) {
-                touchEndX = e.changedTouches[0].screenX;
-                const endY = e.changedTouches[0].screenY;
-                const deltaX = Math.abs(touchEndX - touchStartX);
-                const deltaY = Math.abs(endY - touchStartY);
-                if (deltaX > deltaY) { // Horizontal swipe only
-                    e.preventDefault();
-                    handleSwipe();
-                }
-            } else {
-                e.preventDefault();
-            }
-        }, { passive: false });
-
-        modalImg.addEventListener('touchmove', (e) => {
-            if (isZoomed) {
-                e.preventDefault();
-            }
-        }, { passive: false });
+        // Swipe gesture navigation intentionally disabled to keep focus on zoom/pan interactions.
     }
 
     // Remove touch event listeners
@@ -1078,20 +1062,5 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    // Touch event handling for swiping is attached in addTouchListeners()
-    
-    function handleSwipe() {
-        const swipeDistance = touchEndX - touchStartX;
-        
-        // Check if the swipe distance is significant enough
-        if (Math.abs(swipeDistance) > swipeThreshold) {
-            if (swipeDistance > 0) {
-                // Swipe right - go to previous image
-                showProduct(currentProductIndex - 1);
-            } else {
-                // Swipe left - go to next image
-                showProduct(currentProductIndex + 1);
-            }
-        }
-    }
+    // Swipe gesture navigation is disabled; users can navigate via buttons or keyboard.
 });
