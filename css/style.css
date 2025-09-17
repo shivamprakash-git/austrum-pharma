@@ -2621,15 +2621,15 @@ footer::before {
     }
 }
 
-@media screen and (max-width: 480px) {
+@media screen and (max-width: 767px) {
     .modal-content-container {
-        width: 98%;
-        height: 95%;
-        border-radius: 0;
+        width: 96%;
+        height: auto;
+        max-height: 90vh;
+        margin: 10px auto;  /* Centered with equal top/bottom margin */
     }
     .gallery-content {
-        /* reduce top padding to use space below close button */
-        padding: 44px 10px 16px;
+        padding: 20px 10px 20px;  /* Balanced top and bottom padding */
     }
     
     .image-container {
@@ -2749,8 +2749,8 @@ footer::before {
 /* Desktop and large screens: ensure larger image area overrides previous rules */
 @media screen and (min-width: 1025px) {
     .modal-content-container {
-        width: 95%;
-        max-width: 1400px;
+        width: 90%;  /* Reduced from 95% */
+        max-width: 1300px;  /* Reduced from 1400px */
         height: 92%;
         max-height: 92vh;
     }
