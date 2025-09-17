@@ -392,6 +392,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('productGalleryModal');
     let modalImg = document.getElementById('galleryImage');
     const productName = document.getElementById('galleryProductName');
+    const productDetails = document.getElementById('galleryProductDetails');
     const closeBtn = document.querySelector('.close-gallery');
     const prevBtn = document.querySelector('.prev');
     const nextBtn = document.querySelector('.next');
@@ -400,6 +401,16 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentIndex = 0;
     let touchStartX = 0;
     let touchEndX = 0;
+    let touchStartY = 0;
+    let touchEndY = 0;
+    
+    // For smooth panning
+    let lastTouchX = null;
+    let lastTouchY = null;
+    let lastTouchTime = 0;
+    let velocityX = 0;
+    let velocityY = 0;
+    let momentumAnimationId = null;
     // Track zoom and pan state
     let isZoomed = false;
     let initialDistance = 0;
@@ -409,10 +420,136 @@ document.addEventListener('DOMContentLoaded', () => {
     let translateX = 0;
     let translateY = 0;
     const ZOOM_THRESHOLD = 1.1; // 10% zoom threshold
+    
+    // Product details data
+    const productDetailsData = {
+        'ALCITRUM P': {
+            description: 'Analgesic and anti-inflammatory medication',
+            composition: 'Aceclofenac 100mg + Paracetamol 325mg',
+            benefits: 'Potent analgesic and anti-inflammatory with rapid absorption. Preferred over conventional NSAIDs',
+            dosage: 'As directed by the physician',
+            packaging: 'Strip of 10 tablets'
+        },
+        'ALCITRUM SP': {
+            description: 'Advanced analgesic with enzyme',
+            composition: 'Aceclofenac 100mg + Paracetamol 325mg + Serratiopeptidase 15mg',
+            benefits: 'Superior GI tolerability with anti-inflammatory, mucolytic, fibrinolytic, and anti-biofilm actions',
+            dosage: 'As directed by the physician',
+            packaging: 'Strip of 10 tablets'
+        },
+        'ALKATRUM': {
+            description: 'Urinary alkalizer',
+            composition: 'Disodium Hydrogen Citrate BP 1.25gm',
+            benefits: 'Relief from urinary burning, infections, and calculi',
+            dosage: 'As directed by the physician',
+            packaging: 'Bottle of 60 tablets'
+        },
+        'AUSRON N': {
+            description: 'Hormone therapy',
+            composition: 'Norethisterone 5mg',
+            benefits: 'Regulates menstruation, reduces bleeding, effective for endometriosis and PMS',
+            dosage: 'As directed by the physician',
+            packaging: 'Strip of 10 tablets'
+        },
+        'AUSTROGAB NT': {
+            description: 'Neuropathic pain management',
+            composition: 'Pregabalin 75mg + Nortriptyline Hydrochloride 10mg',
+            benefits: 'First-line treatment for neuropathy with synergistic action and fewer side effects',
+            dosage: 'As directed by the physician',
+            packaging: 'Strip of 10 tablets'
+        },
+        'CEFUTRUM 500': {
+            description: 'Broad-spectrum cephalosporin antibiotic',
+            composition: 'Cefuroxime Axetil 500mg',
+            benefits: 'Second-gen cephalosporin active against staphylococcal, streptococcal, gonorrhoeae, and resistant strains',
+            dosage: 'As prescribed by the physician',
+            packaging: 'Strip of 6 tablets, 10 tablets'
+        },
+        'CIPTRUM 500': {
+            description: 'Calcium supplement',
+            composition: 'Calcium Carbonate 500mg + Vitamin D3 1000 IU',
+            benefits: 'Strengthens bones and nerves. Recommended daily calcium dose',
+            dosage: 'As directed by the physician',
+            packaging: 'Strip of 15 tablets'
+        },
+        'CIPTRUM 60K': {
+            description: 'Vitamin D3 supplement',
+            composition: 'Cholecalciferol (Vitamin D3) 60,000 IU',
+            benefits: 'Enhances calcium absorption, bone strength, and immune function',
+            dosage: 'Once weekly or as directed by the physician',
+            packaging: 'Strip of 4 tablets'
+        },
+        'CIPTRUM XT': {
+            description: 'Bone health supplement',
+            composition: 'Calcium Carbonate 1250mg + Vitamin D3 2000 IU + L-Methylfolate + Pyridoxal-5-Phosphate + Methylcobalamin',
+            benefits: 'Supports bone health, calcium absorption, nerve function, and red blood cell formation',
+            dosage: 'As directed by the physician',
+            packaging: 'Strip of 10 tablets'
+        },
+        'DOXITRUM PLUS': {
+            description: 'Pregnancy support supplement',
+            composition: 'Doxylamine Succinate 10mg + Pyridoxine HCI + Folic Acid 2.5mg',
+            benefits: 'Manages morning sickness during pregnancy. Supports hormonal balance and neural tube development',
+            dosage: 'As directed by the physician',
+            packaging: 'Strip of 10 tablets'
+        },
+        'ENZOTRUM': {
+            description: 'Enzyme supplement',
+            composition: 'Trypsin + Bromelain + Rutoside',
+            benefits: 'Reduces inflammation, swelling, enhances tissue repair, improves drug absorption, and stabilizes capillaries',
+            dosage: 'As directed by the physician',
+            packaging: 'Strip of 10 tablets'
+        },
+        'FERROTRUM XT TABLET': {
+            description: 'Iron supplement',
+            composition: 'Ferrous Ascorbate 100mg + Folic Acid 1.5mg',
+            benefits: 'Boosts iron levels, fights fatigue, supports fetal development',
+            dosage: '1 tablet daily or as directed',
+            packaging: 'Strip of 10 tablets, 15 tablets, 30 tablets'
+        },
+        'FERROTRUM XT SYRUP': {
+            description: 'Iron supplement syrup',
+            composition: 'Ferrous Ascorbate + Folic Acid',
+            benefits: 'Treats anemia, supports pregnancy and lactation recovery',
+            dosage: 'As directed by the physician',
+            packaging: '200ml bottle'
+        },
+        'LINOTRUM 600': {
+            description: 'Antibiotic',
+            composition: 'Linezolid 600mg',
+            benefits: 'Effective against Gram-positive bacteria. Used for MDR-TB, bone/joint infections, respiratory and skin infections',
+            dosage: 'As prescribed by the physician',
+            packaging: 'Strip of 10 tablets'
+        },
+        'MOXITRUM CV 625': {
+            description: 'Antibiotic combination',
+            composition: 'Amoxicillin 500mg + Clavulanate 125mg',
+            benefits: 'Broad-spectrum antibacterial effective against beta-lactamase producing bacteria',
+            dosage: '1 tablet twice daily or as prescribed',
+            packaging: 'Strip of 6 tablets, 10 tablets'
+        },
+        'PATRUM DSR': {
+            description: 'Acid controller',
+            composition: 'Pantoprazole + Domperidone',
+            benefits: 'Prolonged acid inhibition. Effective for GERD, nausea, vomiting, and gastric emptying',
+            dosage: '1 capsule daily before breakfast or as directed',
+            packaging: 'Strip of 10 capsules'
+        },
+        'PREGTRUM SR 200': {
+            description: 'Progesterone supplement',
+            composition: 'Natural Micronized Progesterone 200mg',
+            benefits: 'Supports gestation, regulates menstrual cycle, lowers miscarriage risk',
+            dosage: 'As prescribed by the gynecologist',
+            packaging: 'Strip of 10 capsules'
+        }
+    };
 
     // Update image transform with current scale and position
     function updateImageTransform() {
-        modalImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentScale})`;
+        // Use transform3d for hardware acceleration
+        modalImg.style.transform = `translate3d(${translateX}px, ${translateY}px, 0) scale(${currentScale})`;
+        // Force hardware acceleration
+        modalImg.style.willChange = 'transform';
     }
 
     // Reset image transform to default
@@ -443,6 +580,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (e.type === 'touchstart') {
                 initialDistance = distance;
+                // Store initial touch positions
+                lastTouchX = touch1.clientX;
+                lastTouchY = touch1.clientY;
             } else if (e.type === 'touchmove') {
                 if (initialDistance > 0) {
                     const scale = Math.min(Math.max(distance / initialDistance, 1), 3);
@@ -455,6 +595,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     resetImageTransform();
                 }
                 initialDistance = 0;
+                lastTouchX = null;
+                lastTouchY = null;
             }
             return false;
         }
@@ -462,30 +604,127 @@ document.addEventListener('DOMContentLoaded', () => {
         // Handle single touch (panning when zoomed)
         if (isZoomed && e.touches.length === 1) {
             const touch = e.touches[0];
+            const now = Date.now();
             
             if (e.type === 'touchstart') {
+                // Reset velocity tracking
+                lastTouchX = touch.clientX;
+                lastTouchY = touch.clientY;
+                lastTouchTime = now;
+                velocityX = 0;
+                velocityY = 0;
+                
+                // Store initial touch position
                 startX = touch.clientX - translateX;
                 startY = touch.clientY - translateY;
-            } else if (e.type === 'touchmove') {
-                // Calculate new position with boundaries
-                const maxX = (currentScale - 1) * modalImg.width / 2;
-                const maxY = (currentScale - 1) * modalImg.height / 2;
                 
-                // Increase sensitivity by multiplying the movement
-                const sensitivity = 2.5; // Increased from 1.5 to 2.5 for better sensitivity
-                translateX = (touch.clientX - startX) * sensitivity;
-                translateY = (touch.clientY - startY) * sensitivity;
+                // Cancel any ongoing momentum animation
+                cancelAnimationFrame(momentumAnimationId);
                 
-                // Apply boundaries
-                translateX = Math.min(Math.max(translateX, -maxX), maxX);
-                translateY = Math.min(Math.max(translateY, -maxY), maxY);
+                return false;
+            } 
+            
+            if (e.type === 'touchmove') {
+                const currentTime = now;
+                const timeDiff = currentTime - lastTouchTime;
                 
-                updateImageTransform();
+                if (timeDiff > 0) {
+                    // Calculate velocity (pixels per millisecond)
+                    const currentX = touch.clientX;
+                    const currentY = touch.clientY;
+                    
+                    // Apply low-pass filter to smooth velocity
+                    const newVelocityX = (currentX - lastTouchX) / timeDiff;
+                    const newVelocityY = (currentY - lastTouchY) / timeDiff;
+                    
+                    velocityX = 0.5 * velocityX + 0.5 * newVelocityX;
+                    velocityY = 0.5 * velocityY + 0.5 * newVelocityY;
+                    
+                    lastTouchX = currentX;
+                    lastTouchY = currentY;
+                    lastTouchTime = currentTime;
+                    
+                    // Update position
+                    translateX = (currentX - startX);
+                    translateY = (currentY - startY);
+                    
+                    // Apply boundaries with elastic effect
+                    applyBoundaries();
+                    
+                    updateImageTransform();
+                }
+                return false;
             }
-            return false;
+            
+            if (e.type === 'touchend' || e.type === 'touchcancel') {
+                // Apply momentum if there was significant movement
+                const momentumThreshold = 0.3; // Minimum velocity for momentum (pixels/ms)
+                const absVelocityX = Math.abs(velocityX);
+                const absVelocityY = Math.abs(velocityY);
+                
+                if (absVelocityX > momentumThreshold || absVelocityY > momentumThreshold) {
+                    applyMomentum(velocityX, velocityY);
+                }
+                
+                return false;
+            }
         }
         
         return true;
+    }
+    
+    // Apply boundaries with elastic effect
+    function applyBoundaries() {
+        const maxX = (currentScale - 1) * modalImg.width / 2;
+        const maxY = (currentScale - 1) * modalImg.height / 2;
+        
+        // Apply boundaries with elastic effect
+        if (Math.abs(translateX) > maxX) {
+            const overscroll = Math.abs(translateX) - maxX;
+            const resistance = 0.5; // Resistance factor (0-1), lower = more resistance
+            translateX = translateX > 0 ? 
+                maxX + Math.pow(overscroll, resistance) : 
+                -maxX - Math.pow(overscroll, resistance);
+        }
+        
+        if (Math.abs(translateY) > maxY) {
+            const overscroll = Math.abs(translateY) - maxY;
+            const resistance = 0.5;
+            translateY = translateY > 0 ? 
+                maxY + Math.pow(overscroll, resistance) : 
+                -maxY - Math.pow(overscroll, resistance);
+        }
+    }
+    
+    // Apply momentum to continue movement after release
+    function applyMomentum(velX, velY) {
+        const deceleration = 0.95; // Deceleration rate (0-1)
+        const minVelocity = 0.01; // Minimum velocity to continue animation
+        
+        let currentVelX = velX;
+        let currentVelY = velY;
+        
+        const animateMomentum = () => {
+            // Apply deceleration
+            currentVelX *= deceleration;
+            currentVelY *= deceleration;
+            
+            // Update position
+            translateX += currentVelX * 16; // 16ms for 60fps
+            translateY += currentVelY * 16;
+            
+            // Apply boundaries
+            applyBoundaries();
+            
+            updateImageTransform();
+            
+            // Continue animation if velocity is significant
+            if (Math.abs(currentVelX) > minVelocity || Math.abs(currentVelY) > minVelocity) {
+                momentumAnimationId = requestAnimationFrame(animateMomentum);
+            }
+        };
+        
+        momentumAnimationId = requestAnimationFrame(animateMomentum);
     }
 
     // Add touch event listeners to the image
@@ -554,9 +793,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     productCards.forEach(card => {
+        const productTitle = card.querySelector('h3').textContent.trim();
         products.push({
             src: card.querySelector('img').src,
-            name: card.querySelector('h3').textContent
+            name: productTitle,
+            details: productDetailsData[productTitle] || {
+                description: 'Comprehensive pharmaceutical formulation',
+                composition: 'High-quality active ingredients',
+                benefits: 'Effective and reliable treatment',
+                dosage: 'As directed by the physician',
+                packaging: 'Standard packaging'
+            }
         });
     });
 
@@ -568,6 +815,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentProductIndex = index;
         modalImg.src = products[currentProductIndex].src;
         productName.textContent = products[currentProductIndex].name;
+        updateProductDetails(products[currentProductIndex]);
         modal.style.display = 'block';
         document.body.style.overflow = 'hidden'; // Prevent scrolling when modal is open
         preloadAdjacentImages(index);
@@ -645,6 +893,30 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function updateProductDetails(product) {
+        if (!product || !product.details) return;
+        
+        const details = product.details;
+        const detailItems = [
+            { label: 'Description', value: details.description || 'N/A' },
+            { label: 'Composition', value: details.composition || 'N/A' },
+            { label: 'Key Benefits', value: details.benefits || 'N/A' },
+            { label: 'Dosage', value: details.dosage || 'As directed by the physician' },
+            { label: 'Packaging', value: details.packaging || 'Standard packaging' }
+        ];
+        
+        let detailsHTML = detailItems.map((item, index) => `
+            <div class="detail-item" style="--index: ${index};">
+                <strong>${item.label}:</strong>
+                <p>${item.value}</p>
+            </div>
+        `).join('');
+        
+        if (productDetails) {
+            productDetails.innerHTML = detailsHTML;
+        }
+    }
+
     function showProduct(newIndex) {
         if (isAnimating) return;
         
@@ -698,6 +970,9 @@ document.addEventListener('DOMContentLoaded', () => {
             currentImg.src = products[currentProductIndex].src;
             currentImg.style.transform = 'translateX(0)';
             productName.textContent = products[currentProductIndex].name;
+            
+            // Update product details
+            updateProductDetails(products[currentProductIndex]);
             
             // Update navigation button states
             const prevButton = document.querySelector('.prev');
