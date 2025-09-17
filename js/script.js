@@ -397,6 +397,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const prevBtn = document.querySelector('.prev');
     const nextBtn = document.querySelector('.next');
     const productCards = document.querySelectorAll('.product-card');
+    const imageContainer = document.querySelector('.image-container');
     const products = [];
     let currentIndex = 0;
     let touchStartX = 0;
@@ -419,7 +420,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let startY = 0;
     let translateX = 0;
     let translateY = 0;
-    const ZOOM_THRESHOLD = 1.1; // 10% zoom threshold
+    const swipeThreshold = 50; // Minimum distance to trigger a swipe
     
     // Product details data
     const productDetailsData = {
@@ -774,6 +775,37 @@ document.addEventListener('DOMContentLoaded', () => {
                 closeModal();
             }
         });
+
+        // Swipe handlers (only when not zoomed) – re-bound each open
+        modalImg.addEventListener('touchstart', (e) => {
+            if (!isZoomed) {
+                touchStartX = e.changedTouches[0].screenX;
+                touchStartY = e.changedTouches[0].screenY;
+            } else {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        modalImg.addEventListener('touchend', (e) => {
+            if (!isZoomed) {
+                touchEndX = e.changedTouches[0].screenX;
+                const endY = e.changedTouches[0].screenY;
+                const deltaX = Math.abs(touchEndX - touchStartX);
+                const deltaY = Math.abs(endY - touchStartY);
+                if (deltaX > deltaY) { // Horizontal swipe only
+                    e.preventDefault();
+                    handleSwipe();
+                }
+            } else {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        modalImg.addEventListener('touchmove', (e) => {
+            if (isZoomed) {
+                e.preventDefault();
+            }
+        }, { passive: false });
     }
 
     // Remove touch event listeners
@@ -931,73 +963,61 @@ document.addEventListener('DOMContentLoaded', () => {
         if (newIndex === currentProductIndex || newIndex < 0 || newIndex >= products.length) return;
         
         isAnimating = true;
-        
-        // Determine direction of slide (1 for right, -1 for left)
-        const direction = newIndex > currentProductIndex ? 1 : -1;
-        
-        // Create a clone of the current image for the slide effect
-        const currentImg = modalImg;
-        const nextImg = document.createElement('img');
-        nextImg.src = products[newIndex].src;
-        nextImg.style.position = 'absolute';
-        nextImg.style.top = '0';
-        nextImg.style.left = direction > 0 ? '100%' : '-100%';
-        nextImg.style.width = '100%';
-        nextImg.style.height = 'auto';
-        nextImg.style.maxHeight = '80vh';
-        nextImg.style.objectFit = 'contain';
-        nextImg.style.transition = 'transform 0.3s ease';
-        nextImg.style.willChange = 'transform';
-        
-        // Add the new image to the container
-        modal.appendChild(nextImg);
-        
-        // Position the current image for the slide
-        currentImg.style.transform = `translateX(${direction * -100}%)`;
-        
-        // Slide in the new image
-        requestAnimationFrame(() => {
-            nextImg.style.transform = 'translateX(0)';
-            currentImg.style.transform = `translateX(${direction * 100}%)`;
-        });
-        
-        // After animation completes
+        const ANIM_MS = 420; // keep in sync with CSS
+
+        // Fallback if container not found
+        const container = imageContainer || modalImg.parentElement || modal;
+
+        // Exit overlay: clone current image
+        const exitImg = modalImg.cloneNode(true);
+        exitImg.classList.add('img-slide', 'slide-exit');
+        // Ensure transforms are cleared on the base image while animating clone
+        modalImg.style.transform = '';
+
+        // Enter overlay: next image
+        const enterImg = document.createElement('img');
+        enterImg.src = products[newIndex].src;
+        enterImg.alt = products[newIndex].name || 'Product Image';
+        enterImg.classList.add('img-slide', 'slide-enter');
+
+        // Append overlays
+        container.appendChild(exitImg);
+        container.appendChild(enterImg);
+
+        // Trigger animation
+        // Force reflow
+        void enterImg.offsetWidth;
+        exitImg.classList.add('slide-exit-active');
+        enterImg.classList.add('slide-enter-active');
+
+        // Complete after transition
         setTimeout(() => {
-            // Update the current index
+            // Update state
             currentProductIndex = newIndex;
-            
-            // Update the main image source and position
-            currentImg.src = products[currentProductIndex].src;
-            currentImg.style.transform = 'translateX(0)';
+            modalImg.src = products[currentProductIndex].src;
             productName.textContent = products[currentProductIndex].name;
-            
-            // Update product details
             updateProductDetails(products[currentProductIndex]);
-            
-            // Update navigation button states
+
+            // Update nav button states
             const prevButton = document.querySelector('.prev');
             const nextButton = document.querySelector('.next');
-            
-            // Disable previous button on first image
             if (prevButton) {
                 prevButton.style.opacity = currentProductIndex === 0 ? '0.5' : '1';
                 prevButton.style.pointerEvents = currentProductIndex === 0 ? 'none' : 'auto';
             }
-            
-            // Disable next button on last image
             if (nextButton) {
                 nextButton.style.opacity = currentProductIndex === products.length - 1 ? '0.5' : '1';
                 nextButton.style.pointerEvents = currentProductIndex === products.length - 1 ? 'none' : 'auto';
             }
-            
-            // Remove the temporary image
-            modal.removeChild(nextImg);
-            
-            // Preload adjacent images for smoother transitions
+
+            // Clean up overlays
+            if (exitImg.parentNode) exitImg.parentNode.removeChild(exitImg);
+            if (enterImg.parentNode) enterImg.parentNode.removeChild(enterImg);
+
+            // Preload neighbors
             preloadAdjacentImages(currentProductIndex);
-            
             isAnimating = false;
-        }, 300); // Match this with CSS transition duration
+        }, ANIM_MS);
     }
 
     // Add click event to all product cards
@@ -1058,46 +1078,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    // Touch event handling for swiping
-    const swipeThreshold = 50; // Minimum distance to trigger a swipe
-    
-    // Add touch events to the image for swiping
-    const galleryContent = document.querySelector('.gallery-content');
-    
-    // Handle touch events for mobile swipe - only on the image
-    modalImg.addEventListener('touchstart', (e) => {
-        if (!isZoomed) { // Only handle swipe if not zoomed
-            touchStartX = e.changedTouches[0].screenX;
-            touchStartY = e.changedTouches[0].screenY;
-        } else {
-            e.preventDefault();
-        }
-    }, { passive: false });
-
-    modalImg.addEventListener('touchend', (e) => {
-        if (!isZoomed) { // Only handle swipe if not zoomed
-            touchEndX = e.changedTouches[0].screenX;
-            const touchEndY = e.changedTouches[0].screenY;
-            
-            // Only handle horizontal swipes (not vertical scrolls)
-            const deltaX = Math.abs(touchEndX - touchStartX);
-            const deltaY = Math.abs(touchEndY - touchStartY);
-            
-            if (deltaX > deltaY) { // Horizontal swipe
-                e.preventDefault();
-                handleSwipe();
-            }
-        } else {
-            e.preventDefault();
-        }
-    }, { passive: false });
-    
-    // Prevent default touch behavior when zoomed
-    modalImg.addEventListener('touchmove', (e) => {
-        if (isZoomed) {
-            e.preventDefault();
-        }
-    }, { passive: false });
+    // Touch event handling for swiping is attached in addTouchListeners()
     
     function handleSwipe() {
         const swipeDistance = touchEndX - touchStartX;
