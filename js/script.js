@@ -560,6 +560,9 @@ document.addEventListener('DOMContentLoaded', () => {
         translateY = 0;
         updateImageTransform();
         isZoomed = false;
+        if (modalImg) {
+            modalImg.style.cursor = 'zoom-in';
+        }
     }
 
     // Track last tap time for double-tap detection
@@ -740,6 +743,13 @@ document.addEventListener('DOMContentLoaded', () => {
         modalImg.addEventListener('touchend', handleTouch, { passive: false });
         modalImg.addEventListener('touchcancel', handleTouch, { passive: false });
         
+        // Prevent vertical scroll when zoomed
+        modalImg.addEventListener('touchmove', function(e) {
+            if (isZoomed && e.touches.length === 1) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+        
         // Disable default gesture handling
         modalImg.addEventListener('gesturestart', function(e) {
             e.preventDefault();
@@ -786,10 +796,85 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Enhanced double-click to toggle zoom in/out
-        // Track last click time for better double-click detection
+        // Enhanced double-click to toggle zoom in/out with wheel handling
         let lastClickTime = 0;
         const DOUBLE_CLICK_DELAY = 300; // ms
+        let isMouseDown = false;
+        let startX, startY;
+
+        // Handle mouse wheel for zooming when image is zoomed
+        function handleWheel(e) {
+            if (!isZoomed) return true;
+            
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Get mouse position relative to the image
+            const rect = modalImg.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // Determine zoom direction
+            const delta = -Math.sign(e.deltaY);
+            const zoomIntensity = 0.1;
+            
+            // Calculate new scale with limits
+            const newScale = Math.max(1, Math.min(5, currentScale + (delta * zoomIntensity * currentScale)));
+            
+            // Calculate the position to zoom toward
+            const mouseX = (x - rect.width / 2) / currentScale;
+            const mouseY = (y - rect.height / 2) / currentScale;
+            
+            // Update scale and position
+            const oldScale = currentScale;
+            currentScale = newScale;
+            isZoomed = currentScale > 1.1;
+            
+            // Adjust position to zoom toward mouse
+            translateX = (mouseX * (currentScale - oldScale)) + (translateX * oldScale / currentScale);
+            translateY = (mouseY * (currentScale - oldScale)) + (translateY * oldScale / currentScale);
+            
+            updateImageTransform();
+            
+            // If we've zoomed out to minimum, reset transform
+            if (currentScale <= 1.1) {
+                resetImageTransform();
+            }
+        }
+
+        // Add wheel event for zooming with mouse wheel
+        modalImg.addEventListener('wheel', handleWheel, { passive: false });
+
+        // Handle mouse down for panning
+        modalImg.addEventListener('mousedown', function(e) {
+            if (!isZoomed) return;
+            
+            isMouseDown = true;
+            startX = e.clientX - translateX;
+            startY = e.clientY - translateY;
+            modalImg.style.cursor = 'grabbing';
+            e.preventDefault();
+            e.stopPropagation();
+        });
+
+        // Handle mouse move for panning
+        document.addEventListener('mousemove', function(e) {
+            if (!isMouseDown || !isZoomed) return;
+            
+            translateX = e.clientX - startX;
+            translateY = e.clientY - startY;
+            updateImageTransform();
+            e.preventDefault();
+            e.stopPropagation();
+        });
+
+        // Handle mouse up to stop panning
+        document.addEventListener('mouseup', function() {
+            isMouseDown = false;
+            if (isZoomed) {
+                modalImg.style.cursor = 'zoom-out';
+            }
+        });
 
         modalImg.addEventListener('click', function(e) {
             const currentTime = new Date().getTime();
@@ -801,17 +886,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 if (isZoomed) {
                     resetImageTransform();
+                    modalImg.style.cursor = 'zoom-in';
                 } else {
                     currentScale = 2;
                     isZoomed = true;
                     updateImageTransform();
+                    modalImg.style.cursor = 'zoom-out';
+                    
+                    // Center on the point where user double-clicked
+                    const rect = modalImg.getBoundingClientRect();
+                    const offsetX = e.clientX - rect.left;
+                    const offsetY = e.clientY - rect.top;
+                    translateX = (rect.width / 2 - offsetX) * (currentScale - 1);
+                    translateY = (rect.height / 2 - offsetY) * (currentScale - 1);
+                    updateImageTransform();
                 }
-                // Reset the timer to prevent accidental triple-click
                 lastClickTime = 0;
             } else {
-                // Single click - just update the timer
                 lastClickTime = currentTime;
             }
+        });
+        
+        // Update cursor style based on zoom state
+        modalImg.addEventListener('mouseenter', function() {
+            modalImg.style.cursor = isZoomed ? 'zoom-out' : 'zoom-in';
         });
         
         // Add click handler to modal overlay to close when clicking outside image
